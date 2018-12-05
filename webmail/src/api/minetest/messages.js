@@ -1,5 +1,7 @@
 
 const app = require("../../app");
+const events = require("../../events");
+const store = require("../../store");
 const keycheck = require("./keycheck");
 
 const bodyParser = require('body-parser')
@@ -30,8 +32,10 @@ app.post('/api/minetest/messages', jsonParser, function(req, res){
 	if (!keycheck(req, res))
 		return;
 
-	//TODO
 	console.log(req.body);
+
+	store.messages = req.body;
+	events.emit("messages-update", req.body);
 
 	res.end()
 });

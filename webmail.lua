@@ -97,6 +97,9 @@ webmail.message_command_loop = function()
 		else
 			-- execute again (error case)
 			minetest.after(10, webmail.message_command_loop)
+
+			-- update mails
+			minetest.after(10, mail.webmail_save_hook)
 		end
 
 	end)
