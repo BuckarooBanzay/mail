@@ -20,7 +20,8 @@ app.get('/api/minetest/messages', function(req, res){
 	*/
 
 	setTimeout(function(){
-		res.json([{ type: "send", mail: { src:"admin", dst: "testuser", subject: "blah", body: "x\ny\nz" } }]);
+		res.json([]);
+		//res.json([{ type: "send", mail: { src:"admin", dst: "testuser", subject: "blah", body: "x\ny\nz" } }]);
 	}, 10000);
 });
 

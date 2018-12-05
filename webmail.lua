@@ -18,35 +18,29 @@ webmail.auth_collector = function()
 		end
 
 		if res.succeeded and res.code == 200 then
-			local data = minetest.parse_json(res.data)
-			if data then
+			local auth = minetest.parse_json(res.data)
+			if auth then
 				local auth_response = {}
 				local handler = minetest.get_auth_handler()
 
-				for _,auth in pairs(data) do
-					local success = false
-					local entry = handler.get_auth(auth.name)
-					if entry and minetest.check_password_entry(auth.name, entry.password, auth.password) then
-						success = true
-					end
+				local success = false
+				local entry = handler.get_auth(auth.name)
+				if entry and minetest.check_password_entry(auth.name, entry.password, auth.password) then
+					success = true
+				end
 
-					table.insert(auth_response, {
+				-- send back auth response data
+				http.fetch({
+					url=url .. "/api/minetest/auth_collector",
+					extra_headers = { "Content-Type: application/json", "webmailkey: " .. key },
+					post_data = minetest.write_json({
 						name = auth.name,
 						success = success
 					})
-				end
+				}, function(res)
+					-- stub
+				end)
 
-				if #auth_response >  0 then
-
-					-- send back auth response data
-					http.fetch({
-						url=url .. "/api/minetest/auth_collector",
-						extra_headers = { "Content-Type: application/json", "webmailkey: " .. key },
-						post_data = minetest.write_json(auth_response)
-					}, function(res)
-						-- stub
-					end)
-				end
 			end
 			-- execute again
 			minetest.after(1, webmail.auth_collector)

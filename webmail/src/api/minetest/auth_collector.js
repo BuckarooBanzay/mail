@@ -1,5 +1,6 @@
 
 const app = require("../../app");
+const events = require("../../events");
 const keycheck = require("./keycheck");
 
 const bodyParser = require('body-parser')
@@ -10,10 +11,17 @@ app.get('/api/minetest/auth_collector', function(req, res){
 	if (!keycheck(req, res))
 		return;
 
-	setTimeout(function(){
-		//res.json([{ name: "testuser", password: "enter" }]);
-		res.json([]);
+	function handleEvent(auth){
+		clearTimeout(handle);
+		res.json(auth);
+	}
+
+	var handle = setTimeout(function(){
+		res.json(null);
+		events.removeListener("login", handleEvent);
 	}, 10000);
+
+	events.once("login", handleEvent);
 });
 
 
@@ -21,8 +29,7 @@ app.post('/api/minetest/auth_collector', jsonParser, function(req, res){
 	if (!keycheck(req, res))
 		return;
 
-	//TODO
-	console.log(req.body);
+	events.emit("login-response", req.body);
 
 	res.end();
 });
