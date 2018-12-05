@@ -11,8 +11,9 @@ app.get('/api/minetest/auth_collector', function(req, res){
 		return;
 
 	setTimeout(function(){
-		res.json([{ name: "testuser", password: "enter" }]);
-	}, 3000);
+		//res.json([{ name: "testuser", password: "enter" }]);
+		res.json([]);
+	}, 10000);
 });
 
 
@@ -22,5 +23,7 @@ app.post('/api/minetest/auth_collector', jsonParser, function(req, res){
 
 	//TODO
 	console.log(req.body);
+
+	res.end();
 });
 
