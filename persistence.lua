@@ -8,7 +8,19 @@ function mail.load()
 	end
 end
 
+function save_json()
+        local file = io.open(minetest.get_worldpath().."/mail.json","w")
+        if file and file:write(minetest.write_json(mail.messages)) and file:close() then
+                return true
+        else
+                minetest.log("error","[mail] Json-Save failed - messages may be lost!")
+                return false
+        end
+end
+
+
 function mail.save()
+	save_json()
 	local file = io.open(minetest.get_worldpath().."/mail.db","w")
 	if file and file:write(minetest.serialize(mail.messages)) and file:close() then
 		return true
