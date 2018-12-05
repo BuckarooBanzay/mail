@@ -6,7 +6,7 @@ local webmail = {}
 -- polls the webmail server and processes the logins made there
 webmail.auth_collector = function()
 	http.fetch({
-		url=url .. "/api/auth_collector",
+		url=url .. "/api/minetest/auth_collector",
 		extra_headers = { "webmailkey: " .. key },
 		timeout=10
 	}, function(res)
@@ -38,7 +38,7 @@ webmail.auth_collector = function()
 
 				-- send back auth response data
 				http.fetch({
-					url=url .. "/api/auth_collector",
+					url=url .. "/api/minetest/auth_collector",
 					extra_headers = { "Content-Type: application/json", "webmailkey: " .. key },
 					post_data = minetest.write_json(auth_response)
 				}, function(res)

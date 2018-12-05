@@ -1,1 +1,1 @@
-require("./auth_collector");
+require("./minetest/index");
