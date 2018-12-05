@@ -20,5 +20,5 @@ module.exports = (username, password) => new Promise(function(resolve, reject){
 	var handle = setTimeout(function(){
 		events.removeListener("login-response", handleEvent);
 		reject("mod-comm timeout");
-	}, 5000);
+	}, 2500);
 });

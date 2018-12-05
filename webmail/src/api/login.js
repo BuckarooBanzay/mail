@@ -14,7 +14,6 @@ app.post('/api/login', jsonParser, function(req, res){
 		res.json(result);
 	})
 	.catch(e => {
-		console.error(e);
 		res.status(500).end();
 	});
 

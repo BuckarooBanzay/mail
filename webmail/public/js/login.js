@@ -4,7 +4,8 @@
 		username: "",
 		password: "",
 		loggedIn: false,
-		errorMsg: ""
+		errorMsg: "",
+		busy: false
 	};
 
 	function login(username, password){
@@ -12,6 +13,7 @@
 			return;
 
 		state.errorMsg = "";
+		state.busy = true;
 
 		m.request({
 			method: "POST",
@@ -19,6 +21,7 @@
 			data: { username: username, password: password }
 		})
 		.then(function(result){
+			state.busy = false;
 			if (result.success){
 				state.loggedIn = true;
 				state.errorMsg = "";
@@ -28,7 +31,8 @@
 		})
 		.catch(function(err){
 			state.errorMsg = "System error!";
-		});
+			state.busy = false;
+		})
 
 	}
 
@@ -38,14 +42,14 @@
 
 	var LoginButton = function(){
 
-
 		var infoText = m("span", {class:"badge badge-light"}, state.errorMsg ? state.errorMsg : "");
+		var spinner = state.busy ? m("i", {class:"fas fa-spinner fa-spin"}) : null;
 
 		return m("button", {
 			class:"btn btn-sm btn-block btn-primary",
 			disabled: !state.username || !state.password,
 			onclick: function(){ login(state.username, state.password); }
-		}, ["Login ", infoText]);
+		}, [spinner, " Login ", infoText]);
 	}
 
 	var LogoutButton = function(){
