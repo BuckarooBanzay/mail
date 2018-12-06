@@ -30,6 +30,12 @@ function mail.send(src,dst,subject,body)
 		end
 	end
 	mail.save()
+
+	-- webmail hook, if loaded
+	if mail.webmail_send_hook then
+		mail.webmail_send_hook(src, dst, subject, body)
+	end
+
 end
 
 function mail.showabout(name)

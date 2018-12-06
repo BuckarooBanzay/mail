@@ -40,6 +40,19 @@ local get_player_messages_handler = function(playername)
 	})
 end
 
+-- invoked from inbox.lua:send()
+mail.webmail_send_hook = function(src,dst,subject,body)
+	channel.send({
+		type = "new-message",
+		data = {
+			src=src,
+			dst=dst,
+			subject=subject,
+			body=body
+		}
+	})
+end
+
 mail.webmail_init = function(http, url, key)
 	channel = Channel(http, url .. "/api/minetest/channel", {
 		extra_headers = { "webmailkey: " .. key }
