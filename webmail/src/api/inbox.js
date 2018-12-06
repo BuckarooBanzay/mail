@@ -1,20 +1,16 @@
 
 const app = require("../app");
-const store = require("../store");
 
-const bodyParser = require('body-parser')
-const jsonParser = bodyParser.json()
+const bodyParser = require('body-parser');
+const jsonParser = bodyParser.json();
 
+const playermessages = require("../promise/playermessages");
 
 app.get('/api/inbox/:name', function(req, res){
 
 	var name = req.params.name;
 
-	console.log(req.params, store);
-
-	if (name && store.messages[name])
-		res.json(store.messages[name]);
-	else
-		res.end();
-
+	playermessages(name)
+	.then(list => res.json(list))
+	.catch(e => res.status(500).end);
 });

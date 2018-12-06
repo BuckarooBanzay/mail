@@ -2,18 +2,15 @@
 
 const events = require("../events");
 
-module.exports = (username, password) => new Promise(function(resolve, reject){
+module.exports = (playername) => new Promise(function(resolve, reject){
 
 	events.emit("channel-send", {
-		type: "auth",
-		data: {
-			name: username,
-			password: password
-		}
+		type: "player-messages",
+		data: playername
 	});
 
 	function handleEvent(result){
-		if (result.type == "auth" && result.data && result.data.name == username){
+		if (result.type == "player-messages" && result.playername == playername){
 			events.removeListener("channel-recv", handleEvent);
 			clearTimeout(handle);
 			resolve(result.data);
