@@ -7,10 +7,5 @@ if (!process.env.WEBMAILKEY){
 const app = require("./app");
 require("./api");
 
-var events = require("./events");
-events.on("channel-recv", function(msg){
-	console.log("channel-recv", msg);//XXX
-});
-
 app.listen(8080, () => console.log('Listening on http://127.0.0.1:8080'))
 

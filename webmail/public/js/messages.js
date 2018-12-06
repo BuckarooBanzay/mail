@@ -55,8 +55,11 @@
 					m("div"),
 					m(InboxTable)
 				];
-			else
+			else {
+				//TODO: side-effect
+				mails = [];
 				return null;
+			}
 		}
 	};
 
