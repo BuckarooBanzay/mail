@@ -12,5 +12,5 @@ app.get('/api/inbox/:name', function(req, res){
 
 	playermessages(name)
 	.then(list => res.json(list))
-	.catch(e => res.status(500).end);
+	.catch(e => res.status(500).end());
 });

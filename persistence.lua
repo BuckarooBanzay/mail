@@ -22,10 +22,6 @@ end
 function mail.save()
 	save_json()
 	local file = io.open(minetest.get_worldpath().."/mail.db","w")
-	if mail.webmail_save_hook then
-		-- call webmail hook if available
-		mail.webmail_save_hook(mail.messages)
-	end
 	if file and file:write(minetest.serialize(mail.messages)) and file:close() then
 		return true
 	else

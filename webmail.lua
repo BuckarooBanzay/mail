@@ -40,15 +40,6 @@ local get_player_messages_handler = function(playername)
 	})
 end
 
--- called on mail saving to disk (every change)
-mail.webmail_save_hook = function()
-	channel.send({
-		type = "messages",
-		data = mail.messages
-	})
-end
-
-
 mail.webmail_init = function(http, url, key)
 	channel = Channel(http, url .. "/api/minetest/channel", {
 		extra_headers = { "webmailkey: " .. key }
@@ -57,10 +48,13 @@ mail.webmail_init = function(http, url, key)
 	channel.receive(function(data)
 		if data.type == "auth" then
 			auth_handler(data.data)
+
 		elseif data.type == "send" then
 			send_handler(data.data)
+
 		elseif data.type == "player-messages" then
 			get_player_messages_handler(data.data)
+
 		end
 	end)
 end
