@@ -10,6 +10,11 @@ const jsonParser = bodyParser.json()
 
 app.post('/api/login', jsonParser, function(req, res){
 
+	if (!req.body.username || !req.body.password){
+		res.status(500).end()
+		return;
+	}
+
 	doLogin(req.body.username, req.body.password)
 	.then(result => {
 		var t = token.sign({

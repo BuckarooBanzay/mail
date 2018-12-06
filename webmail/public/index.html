@@ -16,7 +16,14 @@
 	<script type="text/javascript"/>
 		webmail = {
 			routes: {},
-			token: localStorage["webmail-token"]
+			token: localStorage["webmail-token"],
+			loginState: {
+				username: "",
+				password: "",
+				loggedIn: false,
+				errorMsg: "",
+				busy: false
+			}
 		};
 	</script>
 	<script src="js/config.js"/></script>

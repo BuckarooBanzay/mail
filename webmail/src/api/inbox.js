@@ -1,16 +1,19 @@
 
 const app = require("../app");
+const tokencheck = require("./tokencheck");
 
 const bodyParser = require('body-parser');
 const jsonParser = bodyParser.json();
 
 const playermessages = require("../promise/playermessages");
 
-app.get('/api/inbox/:name', function(req, res){
+app.get('/api/inbox', function(req, res){
 
-	var name = req.params.name;
+	var payload = tokencheck(req, res);
+	if (payload) {
+		playermessages(payload.username)
+		.then(list => res.json(list))
+		.catch(e => res.status(500).end());
+	}
 
-	playermessages(name)
-	.then(list => res.json(list))
-	.catch(e => res.status(500).end());
 });

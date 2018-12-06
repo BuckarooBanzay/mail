@@ -1,14 +1,7 @@
 (function(){
 
-	var state = {
-		username: "",
-		password: "",
-		loggedIn: false,
-		errorMsg: "",
-		busy: false
-	};
+	var state = webmail.loginState;
 
-	//TODO: verify saved token and auto-login
 	if (webmail.token){
 		m.request({
 			url: "api/verify",
@@ -76,7 +69,7 @@
 	}
 
 	var LogoutButton = function(){
-		return m("button", {
+		return m("button[type=submit]", {
 			class:"btn btn-sm btn-block btn-secondary",
 			onclick: function(){ logout(); }
 		}, "Logout");
@@ -118,7 +111,7 @@
 			return [
 				m("div", {class:"row"}, [
 					m("div", {class:"col-md-4"}),
-					m("div", {class:"col-md-4"}, m(LoginForm)),
+					m("form", {class:"col-md-4"}, m(LoginForm)),
 					m("div", {class:"col-md-4"})
 				])
 			];
