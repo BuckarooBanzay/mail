@@ -8,6 +8,21 @@
 		busy: false
 	};
 
+	//TODO: verify saved token and auto-login
+	if (webmail.token){
+		m.request({
+			url: "api/verify",
+			headers: { "authorization": webmail.token }
+		})
+		.then(function(result){
+			if (result.username){
+				state.username = result.username;
+				state.loggedIn = true;
+			}
+		});
+	}
+
+
 	function login(username, password){
 		if (!username || !password)
 			return;
@@ -25,6 +40,10 @@
 			if (result.success){
 				state.loggedIn = true;
 				state.errorMsg = "";
+
+				//save token
+				webmail.token = result.token;
+				localStorage["webmail-token"] = result.token;
 			} else {
 				state.errorMsg = "Login failed!";
 			}
@@ -38,6 +57,10 @@
 
 	function logout(){
 		state.loggedIn = false;
+		
+		//clear token
+		webmail.token = null;
+		delete localStorage["webmail-token"];
 	}
 
 	var LoginButton = function(){

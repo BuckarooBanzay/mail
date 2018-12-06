@@ -1,4 +1,9 @@
 
+
+if (!process.env.WEBMAILKEY){
+	throw new Error("WEBMAILKEY env var not found!");
+}
+
 const app = require("./app");
 require("./api");
 
