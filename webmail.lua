@@ -1,126 +1,54 @@
 
-local url, key, http
-
 local webmail = {}
 
--- polls the webmail server and processes the logins made there
-webmail.auth_collector = function()
-	http.fetch({
-		url=url .. "/api/minetest/auth_collector",
-		extra_headers = { "webmailkey: " .. key },
-		timeout=15
-	}, function(res)
+local MP = minetest.get_modpath(minetest.get_current_modname())
+local Channel = dofile(MP .. "/util/channel.lua")
+local channel
 
-		if res.code == 403 then
-			-- unauthorized, abort
-			minetest.log("error", "[webmail] invalid key specified!")
-			return
-		end
 
-		if res.succeeded and res.code == 200 then
-			local auth = minetest.parse_json(res.data)
-			if auth then
-				local auth_response = {}
-				local handler = minetest.get_auth_handler()
+local auth_handler = function(auth)
+	local handler = minetest.get_auth_handler()
 
-				local success = false
-				local entry = handler.get_auth(auth.name)
-				if entry and minetest.check_password_entry(auth.name, entry.password, auth.password) then
-					success = true
-				end
+	local success = false
+	local entry = handler.get_auth(auth.name)
+	if entry and minetest.check_password_entry(auth.name, entry.password, auth.password) then
+		success = true
+	end
 
-				-- send back auth response data
-				http.fetch({
-					url=url .. "/api/minetest/auth_collector",
-					extra_headers = { "Content-Type: application/json", "webmailkey: " .. key },
-					post_data = minetest.write_json({
-						name = auth.name,
-						success = success
-					})
-				}, function(res)
-					-- stub
-				end)
+	channel.send({
+		type = "auth",
+		data = {
+			name = auth.name,
+			success = success
+		}
+	})
+end
 
-			end
-			-- execute again
-			minetest.after(1, webmail.auth_collector)
-		else
-			-- execute again (error case)
-			minetest.after(10, webmail.auth_collector)
-		end
-
-	end)
+local send_handler = function(sendmail)
+	-- send mail from webclient
+	minetest.log("action", "[webmail] sending mail from webclient: " .. sendmail.src .. " -> " .. sendmail.dst)
+	mail.send(sendmail.src, sendmail.dst, sendmail.subject, sendmail.body)
 end
 
 -- called on mail saving to disk (every change)
 mail.webmail_save_hook = function()
-	http.fetch({
-		url=url .. "/api/minetest/messages",
-		extra_headers = { "Content-Type: application/json", "webmailkey: " .. key },
-		post_data = minetest.write_json(mail.messages)
-	}, function(res)
-		if not res.succeeded then
-			minetest.log("error", "[webmail] message sync to web failed")
-		end
-	end)
+	channel.send({
+		type = "messages",
+		data = mail.messages
+	})
 end
 
--- polls the message endpoint for commands from the webclient
-webmail.message_command_loop = function()
-	http.fetch({
-		url=url .. "/api/minetest/messages",
-		extra_headers = { "webmailkey: " .. key },
-		timeout=15
-	}, function(res)
 
-		if res.code == 403 then
-			-- unauthorized, abort
-			minetest.log("error", "[webmail] invalid key specified!")
-			return
-		end
+mail.webmail_init = function(http, url, key)
+	channel = Channel(http, url .. "/api/minetest/channel", {
+		extra_headers = { "webmailkey: " .. key }
+	})
 
-		if res.succeeded and res.code == 200 then
-			local data = minetest.parse_json(res.data)
-			if data then
-				for _,cmd in pairs(data) do
-					if cmd.type == "send" and cmd.mail and cmd.mail.src and cmd.mail.dst then
-						-- send mail from webclient
-						local sendmail = cmd.mail
-						minetest.log("action", "[webmail] sending mail from webclient: " .. sendmail.src .. " -> " .. sendmail.dst)
-						mail.send(sendmail.src, sendmail.dst, sendmail.subject, sendmail.body)
-					end
-				end
-			end
-
-			-- execute again
-			minetest.after(1, webmail.message_command_loop)
-		else
-			-- execute again (error case)
-			minetest.after(10, webmail.message_command_loop)
-
-			-- update mails
-			minetest.after(10, mail.webmail_save_hook)
-		end
-
-	end)
-end
-
-mail.webmail_init = function(_http, webmail_url, webmail_key)
-	url = webmail_url
-	key = webmail_key
-	http = _http
-
-	minetest.after(4, function()
-		-- start auth collector loop
-		webmail.auth_collector()
-
-		-- start message command loop
-		webmail.message_command_loop()
-
-		-- sync messages after server start
-		if #mail.messages > 0 then
-			-- only if mails available
-			mail.webmail_save_hook()
+	channel.receive(function(data)
+		if data.type == "auth" then
+			auth_handler(data.data)
+		elseif data.type == "send" then
+			send_handler(data.data)
 		end
 	end)
 end

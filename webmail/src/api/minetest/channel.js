@@ -6,30 +6,30 @@ const keycheck = require("./keycheck");
 const bodyParser = require('body-parser')
 const jsonParser = bodyParser.json()
 
-
-app.get('/api/minetest/auth_collector', function(req, res){
+// web -> mod
+app.get('/api/minetest/channel', function(req, res){
 	if (!keycheck(req, res))
 		return;
 
-	function handleEvent(auth){
+	function handleEvent(obj){
 		clearTimeout(handle);
-		res.json(auth);
+		res.json(obj);
 	}
 
 	var handle = setTimeout(function(){
 		res.json(null);
-		events.removeListener("login", handleEvent);
+		events.removeListener("channel-send", handleEvent);
 	}, 10000);
 
-	events.once("login", handleEvent);
+	events.once("channel-send", handleEvent);
 });
 
-
-app.post('/api/minetest/auth_collector', jsonParser, function(req, res){
+// mod -> web
+app.post('/api/minetest/channel', jsonParser, function(req, res){
 	if (!keycheck(req, res))
 		return;
 
-	events.emit("login-response", req.body);
+	events.emit("channel-recv", req.body);
 
 	res.end();
 });
