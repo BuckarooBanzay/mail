@@ -6,17 +6,34 @@
 			headers: { "authorization": webmail.token }
 		})
 		.then(function(result){
-			webmail.mails = result;
+			// add lua index on mail
+			var i = 1;
+			webmail.mails = result.map(function(mail){
+				mail.index = i++;
+				return mail;
+			});
 		});
 	}
 
+
 	var InboxRow = {
 		view: function(vnode){
+			function openMail(){
+				m.route.set("/message/:id", { id: vnode.attrs.row.index });
+			}
+
 			return m("tr", [
 				m("td", vnode.attrs.row.sender),
 				m("td", vnode.attrs.row.subject),
 				m("td", vnode.attrs.row.unread),
-				m("td", vnode.attrs.row.body)
+				m("td", [
+					m("div", { class: "btn-group" }, [
+						m("button[type=button]", { class: "btn btn-primary", onclick: openMail }, "Open"),
+						m("button[type=button]", { class: "btn btn-secondary" }, "Mark unread"),
+						m("button[type=button]", { class: "btn btn-secondary" }, "Mark read"),
+						m("button[type=button]", { class: "btn btn-danger" }, "Remove")
+					])
+				])
 			]);
 		}
 	};
@@ -31,7 +48,7 @@
 				m("th", "Sender"),
 				m("th", "Subject"),
 				m("th", "Status"),
-				m("th", "Text")
+				m("th", "Action")
 			]));
 
 			var body = m("tbody", webmail.mails.map(function(row){
