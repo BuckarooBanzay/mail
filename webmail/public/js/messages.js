@@ -1,14 +1,12 @@
 (function(){
 
-	var mails = [];
-
 	function fetchMails(){
 		m.request({
 			url: "api/inbox",
 			headers: { "authorization": webmail.token }
 		})
 		.then(function(result){
-			mails = result;
+			webmail.mails = result;
 		});
 	}
 
@@ -25,7 +23,7 @@
 
 	var InboxTable = {
 		oncreate: function(vnode){
-			if (!mails.length)
+			if (!webmail.mails.length)
 				fetchMails();
 		},
 		view: function(vnode){
@@ -36,7 +34,7 @@
 				m("th", "Text")
 			]));
 
-			var body = m("tbody", mails.map(function(row){
+			var body = m("tbody", webmail.mails.map(function(row){
 				return m(InboxRow, {row: row});
 			}));
 
@@ -55,11 +53,8 @@
 					m("div"),
 					m(InboxTable)
 				];
-			else {
-				//TODO: side-effect
-				mails = [];
+			else
 				return null;
-			}
 		}
 	};
 

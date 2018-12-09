@@ -50,6 +50,7 @@
 
 	function logout(){
 		state.loggedIn = false;
+		webmail.mails = [];
 		
 		//clear token
 		webmail.token = null;
