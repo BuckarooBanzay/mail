@@ -40,6 +40,27 @@ local get_player_messages_handler = function(playername)
 	})
 end
 
+-- remove mail
+local delete_mail_handler = function(playername, index)
+	if mail.messages[playername][index] then
+		table.remove(mail.messages[playername], index)
+	end
+end
+
+-- mark mail as read
+local mark_mail_read_handler = function(playername, index)
+	if mail.messages[playername][index] then
+		mail.messages[playername][index].unread = false
+	end
+end
+
+-- mark mail as unread
+local mark_mail_unread_handler = function(playername, index)
+	if mail.messages[playername][index] then
+		mail.messages[playername][index].unread = true
+	end
+end
+
 -- invoked from inbox.lua:send()
 mail.webmail_send_hook = function(src,dst,subject,body)
 	channel.send({
@@ -63,7 +84,16 @@ mail.webmail_init = function(http, url, key)
 			auth_handler(data.data)
 
 		elseif data.type == "send" then
-			send_handler(data.data)
+			send_handler(data.data) -- { src, dst, subject, body }
+
+		elseif data.type == "delete-mail" then
+			delete_mail_handler(data.playername, data.index) -- index 1-based
+
+		elseif data.type == "mark-mail-read" then
+			mark_mail_read_handler(data.playername, data.index) -- index 1-based
+
+		elseif data.type == "mark-mail-unread" then
+			mark_mail_unread_handler(data.playername, data.index) -- index 1-based
 
 		elseif data.type == "player-messages" then
 			get_player_messages_handler(data.data)
