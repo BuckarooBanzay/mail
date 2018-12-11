@@ -7,9 +7,19 @@
 				m.route.set("/message/:id", { id: vnode.attrs.row.index });
 			}
 
+			var timeStr = "";
+
+			if (vnode.attrs.row.time){
+				var time_m = moment(vnode.attrs.row.time * 1000);
+				var durationStr = moment.duration(time_m - moment()).humanize(true);
+
+				timeStr = time_m.format("YYYY-MM-DD HH:mm:ss") + " (" + durationStr + ")";
+			}
+
 			return m("tr", [
 				m("td", vnode.attrs.row.sender),
 				m("td", vnode.attrs.row.subject),
+				m("td", timeStr),
 				m("td", vnode.attrs.row.unread),
 				m("td", [
 					m("div", { class: "btn-group" }, [
@@ -32,6 +42,7 @@
 			var head = m("thead", m("tr", [
 				m("th", "Sender"),
 				m("th", "Subject"),
+				m("th", "Sent"),
 				m("th", "Status"),
 				m("th", "Action")
 			]));

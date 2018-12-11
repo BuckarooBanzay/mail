@@ -21,7 +21,13 @@ mail.inboxformspec =    "size[8,9;]"..
 
 function mail.send(src,dst,subject,body)
 	if not mail.messages[dst] then mail.messages[dst] = {} end
-	table.insert(mail.messages[dst],1,{unread=true,sender=src,subject=subject,body=body})
+	table.insert(mail.messages[dst],1,{
+		unread=true,
+		sender=src,
+		subject=subject,
+		body=body,
+		time=os.time()
+	})
 	for _,player in ipairs(minetest.get_connected_players()) do
 		local name = player:get_player_name()
 		if name == dst then
