@@ -1,20 +1,5 @@
 (function(){
 
-	function fetchMails(){
-		m.request({
-			url: "api/inbox",
-			headers: { "authorization": webmail.token }
-		})
-		.then(function(result){
-			// add lua index on mail
-			var i = 1;
-			webmail.mails = result.map(function(mail){
-				mail.index = i++;
-				return mail;
-			});
-		});
-	}
-
 
 	var InboxRow = {
 		view: function(vnode){
@@ -39,11 +24,11 @@
 	};
 
 	var InboxTable = {
-		oncreate: function(vnode){
-			if (!webmail.mails.length)
-				fetchMails();
-		},
 		view: function(vnode){
+			if (!webmail.mails){
+				return m("div", "Loading...");
+			}
+
 			var head = m("thead", m("tr", [
 				m("th", "Sender"),
 				m("th", "Subject"),
@@ -57,7 +42,7 @@
 
 			return m("table",
 				{class:"table table-condensed table-striped table-sm"},
-				[head,body]
+				[head, body]
 			);
 		}
 	};
