@@ -42,21 +42,21 @@ end
 
 -- remove mail
 local delete_mail_handler = function(playername, index)
-	if mail.messages[playername][index] then
+	if mail.messages[playername] and mail.messages[playername][index] then
 		table.remove(mail.messages[playername], index)
 	end
 end
 
 -- mark mail as read
 local mark_mail_read_handler = function(playername, index)
-	if mail.messages[playername][index] then
+	if mail.messages[playername] and mail.messages[playername][index] then
 		mail.messages[playername][index].unread = false
 	end
 end
 
 -- mark mail as unread
 local mark_mail_unread_handler = function(playername, index)
-	if mail.messages[playername][index] then
+	if mail.messages[playername] and mail.messages[playername][index] then
 		mail.messages[playername][index].unread = true
 	end
 end

@@ -2,6 +2,8 @@
 -- bi-directional http-channel
 -- with long-poll GET and POST on the same URL
 
+local debug = true
+
 local Channel = function(http, url, cfg)
 
 	cfg = cfg or {}
@@ -30,6 +32,11 @@ local Channel = function(http, url, cfg)
 		}, function(res)
 			if res.succeeded and res.code == 200 then
 				local data = minetest.parse_json(res.data)
+
+				if debug then
+					minetest.log("action", "[webmail-rx] " .. dump(data))
+				end
+
 				if data then
 					for _,listener in pairs(recv_listeners) do
 						listener(data)
@@ -47,6 +54,11 @@ local Channel = function(http, url, cfg)
 
 	local send = function(data)
 		-- POST
+
+		if debug then
+			minetest.log("action", "[webmail-tx] " .. dump(data))
+		end
+
 		http.fetch({
 			url = url,
 			extra_headers = post_headers,

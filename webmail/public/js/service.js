@@ -59,15 +59,18 @@ service.fetchMails = function(){
 	if (!webmail.mails || !webmail.mails.length){
 		webmail.api.fetchMails()
 		.then(function(result){
-			// add lua index on mail
-			var i = 1;
-			webmail.mails = result.map(function(mail){
-				mail.index = i++;
-				return mail;
-			});
+			webmail.mails = result;
 		});
 	}
 
+}
+
+service.deleteMail = function(index){
+	return webmail.api.deleteMail(index)
+	.then(function(){
+		webmail.mails = null;
+		return service.fetchMails();
+	});
 }
 
 

@@ -9,6 +9,14 @@ api.fetchMails = function(){
 	});
 }
 
+api.deleteMail = function(index){
+	return m.request({
+		method: "DELETE",
+		url: "api/inbox/" + index,
+		headers: { "authorization": webmail.token }
+	});
+}
+
 api.verifyToken = function(){
 	return m.request({
 		url: "api/verify",

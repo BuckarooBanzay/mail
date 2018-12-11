@@ -7,6 +7,10 @@
 				m.route.set("/message/:id", { id: vnode.attrs.row.index });
 			}
 
+			function deleteMail(){
+				webmail.service.deleteMail(vnode.attrs.row.index);
+			}
+
 			var timeStr = "";
 
 			if (vnode.attrs.row.time){
@@ -26,7 +30,7 @@
 						m("button[type=button]", { class: "btn btn-primary", onclick: openMail }, "Open"),
 						m("button[type=button]", { class: "btn btn-secondary" }, "Mark unread"),
 						m("button[type=button]", { class: "btn btn-secondary" }, "Mark read"),
-						m("button[type=button]", { class: "btn btn-danger" }, "Remove")
+						m("button[type=button]", { class: "btn btn-danger", onclick: deleteMail }, "Remove")
 					])
 				])
 			]);
