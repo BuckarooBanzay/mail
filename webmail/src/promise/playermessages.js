@@ -13,7 +13,7 @@ module.exports = (playername) => new Promise(function(resolve, reject){
 		if (result.type == "player-messages" && result.playername == playername){
 			events.removeListener("channel-recv", handleEvent);
 			clearTimeout(handle);
-			resolve(result.data);
+			resolve(result.data || []);
 		}
 	}
 
