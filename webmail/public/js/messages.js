@@ -20,17 +20,22 @@
 				timeStr = time_m.format("YYYY-MM-DD HH:mm:ss") + " (" + durationStr + ")";
 			}
 
-			return m("tr", [
+			var rowClass = vnode.attrs.row.unread ? "table-primary" : "";
+
+			return m("tr", {class: rowClass}, [
 				m("td", vnode.attrs.row.sender),
 				m("td", vnode.attrs.row.subject),
 				m("td", timeStr),
-				m("td", vnode.attrs.row.unread),
 				m("td", [
 					m("div", { class: "btn-group" }, [
-						m("button[type=button]", { class: "btn btn-primary", onclick: openMail }, "Open"),
-						m("button[type=button]", { class: "btn btn-secondary" }, "Mark unread"),
-						m("button[type=button]", { class: "btn btn-secondary" }, "Mark read"),
-						m("button[type=button]", { class: "btn btn-danger", onclick: deleteMail }, "Remove")
+						m("button[type=button]", { class: "btn btn-primary", onclick: openMail },[
+							m("i", {class:"fa fa-envelope-open"}),
+							"Open"
+						]),
+						m("button[type=button]", { class: "btn btn-danger", onclick: deleteMail },[
+							m("i", {class:"fa fa-trash"}),
+							"Remove"
+						])
 					])
 				])
 			]);
@@ -47,7 +52,6 @@
 				m("th", "Sender"),
 				m("th", "Subject"),
 				m("th", "Sent"),
-				m("th", "Status"),
 				m("th", "Action")
 			]));
 

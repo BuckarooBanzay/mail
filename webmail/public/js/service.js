@@ -62,7 +62,31 @@ service.fetchMails = function(){
 			webmail.mails = result;
 		});
 	}
+}
 
+service.countUnread = function(){
+	var count = 0;
+	if (webmail.mails && webmail.mails.length){
+		webmail.mails.forEach(function(mail){
+			if (mail.unread)
+				count++;
+		});
+	}
+
+	return count;
+}
+
+service.readMail = function(index){
+	if (webmail.mails && webmail.mails.length){
+		//mark as read with api
+		webmail.api.markRead(index);
+
+		//mark read locally
+		var mail = webmail.mails[index-1];
+		mail.unread = false;
+
+		return mail;
+	}
 }
 
 service.deleteMail = function(index){

@@ -6,7 +6,7 @@
 				return m("div", "Loading...");
 
 			var id = m.route.param("id");
-			var mail = webmail.mails[id-1];
+			var mail = webmail.service.readMail(id);
 
 			console.log(mail);//XXX
 

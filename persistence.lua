@@ -29,3 +29,15 @@ function mail.save()
 		return false
 	end
 end
+
+-- save periodically
+local timer = 0
+minetest.register_globalstep(function(dtime)
+	timer = timer + dtime
+	if timer < 30 then return end
+	timer=0
+
+	mail.save()
+end)
+
+

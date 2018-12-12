@@ -17,6 +17,15 @@ api.deleteMail = function(index){
 	});
 }
 
+api.markRead = function(index){
+	return m.request({
+		method: "POST",
+		url: "api/markread",
+		data: { index: index },
+		headers: { "authorization": webmail.token }
+	});
+}
+
 api.verifyToken = function(){
 	return m.request({
 		url: "api/verify",
