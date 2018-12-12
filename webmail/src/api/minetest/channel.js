@@ -6,26 +6,44 @@ const keycheck = require("./keycheck");
 const bodyParser = require('body-parser')
 const jsonParser = bodyParser.json()
 
-const debug = true;
+const debug = false;
+
+var tx_queue = [];
+
+events.on("channel-send", function(data){
+	tx_queue.push(data);
+});
 
 // web -> mod
 app.get('/api/minetest/channel', function(req, res){
 	if (!keycheck(req, res))
 		return;
 
-	function handleEvent(obj){
-		clearTimeout(handle);
-		if (debug)
-			console.log("[tx]", obj);
-		res.json(obj);
+	function trySend(){
+		if (tx_queue.length > 0){
+			var obj = tx_queue.shift();
+			if (debug)
+				console.log("[tx]", obj);
+			res.json(obj);
+			return true;
+		}
+		return false;
 	}
 
-	var handle = setTimeout(function(){
-		res.json(null);
-		events.removeListener("channel-send", handleEvent);
-	}, 10000);
+	const start = Date.now();
 
-	events.once("channel-send", handleEvent);
+	function loop(){
+		if (trySend())
+			return;
+
+		if ((Date.now() - start) < 10000){
+			setTimeout(loop, 200);
+		} else {
+			res.json(null);
+		}
+	}
+
+	loop();
 });
 
 // mod -> web

@@ -2,7 +2,7 @@
 -- bi-directional http-channel
 -- with long-poll GET and POST on the same URL
 
-local debug = true
+local debug = false
 
 local Channel = function(http, url, cfg)
 
