@@ -68,8 +68,13 @@ service.fetchMails = function(){
 service.deleteMail = function(index){
 	return webmail.api.deleteMail(index)
 	.then(function(){
-		webmail.mails = null;
-		return service.fetchMails();
+		var new_index = 1;
+		webmail.mails = webmail.mails
+		.filter(function(mail){ return mail.index != index; })
+		.map(function(mail){
+			mail.index = new_index++;
+			return mail;
+		});
 	});
 }
 
