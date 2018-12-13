@@ -78,12 +78,16 @@ service.countUnread = function(){
 
 service.readMail = function(index){
 	if (webmail.mails && webmail.mails.length){
-		//mark as read with api
-		webmail.api.markRead(index);
 
-		//mark read locally
 		var mail = webmail.mails[index-1];
-		mail.unread = false;
+
+		//mark as read with api
+		if (mail.unread){
+			webmail.api.markRead(index);
+
+			//mark read locally
+			mail.unread = false;
+		}
 
 		return mail;
 	}
