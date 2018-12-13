@@ -20,6 +20,9 @@ mail.inboxformspec =    "size[8,9;]"..
 			"textlist[0,0.5;6,8.5;message;"	
 
 function mail.send(src,dst,subject,body)
+	minetest.log("action", "[mail] '" .. src .. "' sends mail to '" .. dst ..
+		"' with subject '" .. subject .. "' and body: '" .. body .. "'")
+
 	if not mail.messages[dst] then mail.messages[dst] = {} end
 	table.insert(mail.messages[dst],1,{
 		unread=true,

@@ -70,10 +70,7 @@
 	webmail.routes["/messages"] = {
 		view: function(){
 			if (webmail.loginState.loggedIn)
-				return [
-					m("div"),
-					m(InboxTable)
-				];
+				return m(InboxTable);
 			else
 				return null;
 		}

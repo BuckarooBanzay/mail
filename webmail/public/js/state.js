@@ -10,6 +10,11 @@
 			errorMsg: "",
 			busy: false
 		},
+		compose: {
+			recipient: "",
+			subject: "",
+			body: ""
+		},
 		mails: null
 	};
 

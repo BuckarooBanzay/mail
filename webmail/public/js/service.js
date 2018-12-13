@@ -76,6 +76,21 @@ service.countUnread = function(){
 	return count;
 }
 
+service.sendMail = function(){
+	webmail.api.sendMail(webmail.compose.recipient, webmail.compose.subject, webmail.compose.body);
+	webmail.compose.recipient = "";
+	webmail.compose.subject = "";
+	webmail.compose.body = "";
+}
+
+service.reply = function(index){
+	var mail = service.readMail(index);
+	webmail.compose.recipient = mail.sender;
+	webmail.compose.subject = "Re: " + mail.subject;
+	webmail.compose.body = "\n---- Original message ----\n" + mail.body;
+	m.route.set("/compose");
+}
+
 service.readMail = function(index){
 	if (webmail.mails && webmail.mails.length){
 

@@ -8,8 +8,6 @@
 			var id = m.route.param("id");
 			var mail = webmail.service.readMail(id);
 
-			console.log(mail);//XXX
-
 			var timeStr = "";
 
 			if (mail.time){
@@ -26,11 +24,17 @@
 				body.push( m("br") );
 			});
 
+			var replyBtn = m("button[type=button]", {
+				onclick: function(){ webmail.service.reply(id); },
+				class: "btn btn-sm btn-primary"
+			}, "Reply");
+
 			return [
 				m("h2", mail.subject),
-				m("h5", [ "From: ", m("b", mail.sender) ]),
+				m("h5", [ "From: ", m("b", mail.sender), replyBtn ]),
 				m("h5", [ "Sent: ", m("b", timeStr) ]),
-				m("div", body)
+				m("div", body),
+				
 			]
 		}
 	};
