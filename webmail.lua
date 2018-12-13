@@ -8,6 +8,7 @@ local channel
 -- auth request from webmail
 local auth_handler = function(auth)
 	local handler = minetest.get_auth_handler()
+	minetest.log("action", "[webmail] auth: " .. auth.name)
 
 	local success = false
 	local entry = handler.get_auth(auth.name)
