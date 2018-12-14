@@ -106,8 +106,17 @@ function mail.showcompose(name,defaulttgt,defaultsubj,defaultbody)
 end
 
 minetest.register_on_player_receive_fields(function(player,formname,fields)
+
+	if formname == "" and fields and fields.quit then
+		if minetest.get_modpath("unified_inventory") then
+			unified_inventory.set_inventory_formspec(player, "craft")
+		end
+	end
+
 	if formname == "mail:about" then
-		mail.showinbox(player:get_player_name())
+		minetest.after(0.5, function()
+			mail.showinbox(player:get_player_name())
+		end)
 	elseif formname == "mail:inbox" then
 		local name = player:get_player_name()
 		if fields.message then
@@ -175,7 +184,9 @@ minetest.register_on_player_receive_fields(function(player,formname,fields)
 		if fields.send then
 			mail.send(player:get_player_name(),fields.to,fields.subject,fields.body)
 		end
-		mail.showinbox(player:get_player_name())
+		minetest.after(0.5, function()
+			mail.showinbox(player:get_player_name())
+		end)
 		return true
 	elseif formname == "mail:unreadnag" then
 		if fields.yes then
