@@ -17,10 +17,17 @@ func logger(h http.Handler) http.Handler {
 
 func main() {
 	var publicport, privateport int
+	var help bool
 
 	flag.IntVar(&publicport, "publicport", 8080, "Public port to listen on")
 	flag.IntVar(&privateport, "privateport", 8081, "Private port to listen on")
+	flag.BoolVar(&help, "help", false, "Show help and usage")
 	flag.Parse()
+
+	if (help){
+		flag.PrintDefaults()
+		return
+	}
 	
 	log.Print("Listening on ports: public=", publicport, " private=", privateport)
 
