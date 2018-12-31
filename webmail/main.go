@@ -5,12 +5,13 @@ import (
 	"flag"
 	"strconv"
 	"net/http"
+	"sync"
+	PrivateHandlers "webmail/handlers/private"
 )
 
-
-func logger(h http.Handler) http.Handler {
+func logger(h http.Handler, prefix string) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		log.Printf("%s requested %s", r.RemoteAddr, r.URL)
+		log.Printf("[%s] %s %s %s", prefix, r.RemoteAddr, r.Method, r.URL)
 		h.ServeHTTP(w, r)
 	})
 }
@@ -31,9 +32,23 @@ func main() {
 	
 	log.Print("Listening on ports: public=", publicport, " private=", privateport)
 
-	h := http.NewServeMux()
-	h.Handle("/", http.FileServer(FS(false)))
+	var wg sync.WaitGroup
+	wg.Add(2)
 
-	log.Fatal(http.ListenAndServe(":" + strconv.Itoa(publicport), logger(h)))
+	go func(){
+		defer wg.Done()
+		private_mux := http.NewServeMux()
+		PrivateHandlers.Init(private_mux)
+		log.Fatal(http.ListenAndServe(":" + strconv.Itoa(privateport), logger(private_mux, "private")))
+	}()
+
+	go func(){
+		defer wg.Done()
+		public_mux := http.NewServeMux()
+		public_mux.Handle("/", http.FileServer(FS(false)))
+		log.Fatal(http.ListenAndServe(":" + strconv.Itoa(publicport), logger(public_mux, "public")))
+	}()
+
+	wg.Wait()
 }
 
