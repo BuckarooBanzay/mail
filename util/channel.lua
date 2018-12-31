@@ -14,7 +14,7 @@ local Channel = function(http, url, cfg)
 
 	-- assemble post-header with json content
 	local post_headers = { "Content-Type: application/json" }
-	for _,header in pairs(cfg.extra_headers) do
+	for _,header in pairs(cfg.extra_headers or {}) do
 		table.insert(post_headers, header)
 	end
 

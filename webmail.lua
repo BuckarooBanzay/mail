@@ -75,10 +75,8 @@ mail.webmail_send_hook = function(src,dst,subject,body)
 	})
 end
 
-mail.webmail_init = function(http, url, key)
-	channel = Channel(http, url .. "/api/minetest/channel", {
-		extra_headers = { "webmailkey: " .. key }
-	})
+mail.webmail_init = function(http, url)
+	channel = Channel(http, url)
 
 	channel.receive(function(data)
 		if data.type == "auth" then
