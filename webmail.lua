@@ -1,12 +1,9 @@
-
-local webmail = {}
-
 local MP = minetest.get_modpath(minetest.get_current_modname())
 local Channel = dofile(MP .. "/util/channel.lua")
 local channel
 
 -- auth request from webmail
-local auth_handler = function(auth)
+local function auth_handler(auth)
 	local handler = minetest.get_auth_handler()
 	minetest.log("action", "[webmail] auth: " .. auth.name)
 
@@ -26,14 +23,14 @@ local auth_handler = function(auth)
 end
 
 -- send request from webmail
-local send_handler = function(sendmail)
+local function send_handler(sendmail)
 	-- send mail from webclient
 	minetest.log("action", "[webmail] sending mail from webclient: " .. sendmail.src .. " -> " .. sendmail.dst)
 	mail.send(sendmail.src, sendmail.dst, sendmail.subject, sendmail.body)
 end
 
 -- get player messages request from webmail
-local get_player_messages_handler = function(playername)
+local function get_player_messages_handler(playername)
 	channel.send({
 		type = "player-messages",
 		playername = playername,
@@ -42,27 +39,27 @@ local get_player_messages_handler = function(playername)
 end
 
 -- remove mail
-local delete_mail_handler = function(playername, index)
+local function delete_mail_handler(playername, index)
 	if mail.messages[playername] and mail.messages[playername][index] then
 		table.remove(mail.messages[playername], index)
 	end
 end
 
 -- mark mail as read
-local mark_mail_read_handler = function(playername, index)
+local function mark_mail_read_handler(playername, index)
 	if mail.messages[playername] and mail.messages[playername][index] then
 		mail.messages[playername][index].unread = false
 	end
 end
 
 -- mark mail as unread
-local mark_mail_unread_handler = function(playername, index)
+local function mark_mail_unread_handler(playername, index)
 	if mail.messages[playername] and mail.messages[playername][index] then
 		mail.messages[playername][index].unread = true
 	end
 end
 
-mail.webmail_send_hook = function(src,dst,subject,body)
+function mail.webmail_send_hook(src,dst,subject,body)
 	channel.send({
 		type = "new-message",
 		data = {
@@ -75,7 +72,7 @@ mail.webmail_send_hook = function(src,dst,subject,body)
 end
 mail.register_on_receive(mail.webmail_send_hook)
 
-mail.webmail_init = function(http, url, key)
+function mail.webmail_init(http, url, key)
 	channel = Channel(http, url .. "/api/minetest/channel", {
 		extra_headers = { "webmailkey: " .. key }
 	})

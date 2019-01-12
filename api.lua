@@ -9,6 +9,7 @@ function mail.register_on_receive(func)
 end
 
 mail.receive_mail_message = "You have a new message from %s! Subject: %s\nTo view it, type /mail"
+mail.read_later_message = "You can read your messages later by using the /mail command"
 
 function mail.send(src,dst,subject,body)
 	minetest.log("action", "[mail] '" .. src .. "' sends mail to '" .. dst ..

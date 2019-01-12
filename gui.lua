@@ -28,9 +28,8 @@ end
 function mail.showinbox(name)
 	local formspec = mail.inboxformspec
 	if not mail.messages[name] then mail.messages[name] = {} end
-	local idx, message
 	if mail.messages[name][1] then
-		for idx,message in ipairs(mail.messages[name]) do
+		for idx, message in ipairs(mail.messages[name]) do
 			if idx ~= 1 then formspec = formspec .. "," end
 			if message.unread then
 				formspec = formspec .. "#FF8888"
@@ -55,7 +54,17 @@ end
 
 function mail.showmessage(name,msgnumber)
 	local message = mail.messages[name][msgnumber]
-	local formspec = "size[8,6]button[7.5,0;0.5,0.5;back;X]label[0,0;From: %s]label[0,0.5;Subject: %s]textarea[0.25,1;8,4;body;;%s]button[1,5;2,1;reply;Reply]button[3,5;2,1;forward;Forward]button[5,5;2,1;delete;Delete]"
+	local formspec = [[
+			size[8,6]
+			button[7.5,0;0.5,0.5;back;X]
+			label[0,0;From: %s]
+			label[0,0.5;Subject: %s]
+			textarea[0.25,1;8,4;body;;%s]
+			button[1,5;2,1;reply;Reply]
+			button[3,5;2,1;forward;Forward]
+			button[5,5;2,1;delete;Delete]
+		]]
+
 	local sender = minetest.formspec_escape(message.sender)
 	local subject = minetest.formspec_escape(message.subject)
 	local body = minetest.formspec_escape(message.body)
@@ -64,8 +73,21 @@ function mail.showmessage(name,msgnumber)
 end
 
 function mail.showcompose(name,defaulttgt,defaultsubj,defaultbody)
-	local formspec = "size[8,8]field[0.25,0.5;4,1;to;To:;%s]field[0.25,1.5;4,1;subject;Subject:;%s]textarea[0.25,2.5;8,4;body;;%s]button[1,7;2,1;cancel;Cancel]button[7.5,0;0.5,0.5;cancel;X]button[5,7;2,1;send;Send]"
-	formspec = string.format(formspec,minetest.formspec_escape(defaulttgt),minetest.formspec_escape(defaultsubj),minetest.formspec_escape(defaultbody))
+	local formspec = [[
+			size[8,8]
+			field[0.25,0.5;4,1;to;To:;%s]
+			field[0.25,1.5;4,1;subject;Subject:;%s]
+			textarea[0.25,2.5;8,4;body;;%s]
+			button[1,7;2,1;cancel;Cancel]
+			button[7.5,0;0.5,0.5;cancel;X]
+			button[5,7;2,1;send;Send]
+		]]
+
+	formspec = string.format(formspec,
+		minetest.formspec_escape(defaulttgt),
+		minetest.formspec_escape(defaultsubj),
+		minetest.formspec_escape(defaultbody))
+
 	minetest.show_formspec(name,"mail:compose",formspec)
 end
 
@@ -94,23 +116,30 @@ function mail.handle_receivefields(player, formname, fields)
 				mail.showmessage(name,mail.highlightedmessages[name])
 			end
 		elseif fields.delete then
-			if mail.messages[name][mail.highlightedmessages[name]] then table.remove(mail.messages[name],mail.highlightedmessages[name]) end
+			if mail.messages[name][mail.highlightedmessages[name]] then
+				table.remove(mail.messages[name], mail.highlightedmessages[name])
+			end
+
 			mail.showinbox(name)
 			mail.save()
 		elseif fields.reply and mail.messages[name][mail.highlightedmessages[name]] then
 			local message = mail.messages[name][mail.highlightedmessages[name]]
-			local replyfooter = "Type your reply here."..string.char(10)..string.char(10).."--Original message follows--"..string.char(10)..message.body
+			local replyfooter = "Type your reply here.\n\n--Original message follows--\n" ..message.body
 			mail.showcompose(name,message.sender,"Re: "..message.subject,replyfooter)
 		elseif fields.forward and mail.messages[name][mail.highlightedmessages[name]] then
 			local message = mail.messages[name][mail.highlightedmessages[name]]
-			local fwfooter = "Type your message here."..string.char(10)..string.char(10).."--Original message follows--"..string.char(10)..message.body
+			local fwfooter = "Type your message here.\n\n--Original message follows--\n" ..message.body
 			mail.showcompose(name,"","Fw: "..message.subject,fwfooter)
 		elseif fields.markread then
-			if mail.messages[name][mail.highlightedmessages[name]] then mail.messages[name][mail.highlightedmessages[name]].unread = false end
+			if mail.messages[name][mail.highlightedmessages[name]] then
+				mail.messages[name][mail.highlightedmessages[name]].unread = false
+			end
 			mail.showinbox(name)
 			mail.save()
 		elseif fields.markunread then
-			if mail.messages[name][mail.highlightedmessages[name]] then mail.messages[name][mail.highlightedmessages[name]].unread = true end
+			if mail.messages[name][mail.highlightedmessages[name]] then
+				mail.messages[name][mail.highlightedmessages[name]].unread = true
+			end
 			mail.showinbox(name)
 			mail.save()
 		elseif fields.new then
@@ -129,14 +158,16 @@ function mail.handle_receivefields(player, formname, fields)
 			mail.showinbox(name)
 		elseif fields.reply then
 			local message = mail.messages[name][mail.highlightedmessages[name]]
-			local replyfooter = "Type your reply here."..string.char(10)..string.char(10).."--Original message follows--"..string.char(10)..message.body
+			local replyfooter = "Type your reply here.\n\n--Original message follows--\n" ..message.body
 			mail.showcompose(name,message.sender,"Re: "..message.subject,replyfooter)
 		elseif fields.forward then
 			local message = mail.messages[name][mail.highlightedmessages[name]]
-			local fwfooter = "Type your message here."..string.char(10)..string.char(10).."--Original message follows--"..string.char(10)..message.body
+			local fwfooter = "Type your message here.\n\n--Original message follows--\n" ..message.body
 			mail.showcompose(name,"","Fw: "..message.subject,fwfooter)
 		elseif fields.delete then
-			if mail.messages[name][mail.highlightedmessages[name]] then table.remove(mail.messages[name],mail.highlightedmessages[name]) end
+			if mail.messages[name][mail.highlightedmessages[name]] then
+				table.remove(mail.messages[name],mail.highlightedmessages[name])
+			end
 			mail.showinbox(name)
 			mail.save()
 		end
@@ -153,7 +184,7 @@ function mail.handle_receivefields(player, formname, fields)
 		if fields.yes then
 			mail.showinbox(player:get_player_name())
 		else
-			minetest.chat_send_player(player:get_player_name(),"You can use the /mail command" .. (minetest.get_modpath("unified_inventory") and " or the mail button in the inventory " or " ") .. "to read your messages later.")
+			minetest.chat_send_player(player:get_player_name(), mail.read_later_message)
 		end
 		return true
 	elseif fields.mail then
@@ -169,6 +200,8 @@ minetest.register_on_player_receive_fields(mail.handle_receivefields)
 if minetest.get_modpath("unified_inventory") then
 	mail.receive_mail_message = mail.receive_mail_message ..
 		" or use the mail button in the inventory"
+	mail.read_later_message = mail.read_later_message ..
+		" or by using the mail button in the inventory"
 
 	unified_inventory.register_button("mail", {
 			type = "image",
