@@ -1,7 +1,5 @@
 mail.highlightedmessages = {}
-
 mail.messages = {}
-
 
 mail.registered_on_receives = {}
 function mail.register_on_receive(func)
@@ -11,17 +9,18 @@ end
 mail.receive_mail_message = "You have a new message from %s! Subject: %s\nTo view it, type /mail"
 mail.read_later_message = "You can read your messages later by using the /mail command"
 
-function mail.send(src,dst,subject,body)
+function mail.send(src, dst, subject, body)
 	minetest.log("action", "[mail] '" .. src .. "' sends mail to '" .. dst ..
 		"' with subject '" .. subject .. "' and body: '" .. body .. "'")
 
-	if not mail.messages[dst] then mail.messages[dst] = {} end
-	table.insert(mail.messages[dst],1,{
-		unread=true,
-		sender=src,
-		subject=subject,
-		body=body,
-		time=os.time()
+	mail.messages[dst] = mail.messages[dst] or {}
+
+	table.insert(mail.messages[dst], 1, {
+		unread  = true,
+		sender  = src,
+		subject = subject,
+		body    = body,
+		time    = os.time(),
 	})
 
 	for _, player in ipairs(minetest.get_connected_players()) do

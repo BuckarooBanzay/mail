@@ -3,7 +3,9 @@ minetest.register_on_joinplayer(function(player)
 		local unreadflag = false
 		if mail.messages[name] then
 			for _, message in ipairs(mail.messages[name]) do
-				if message.unread then unreadflag = true end
+				if message.unread then
+					unreadflag = true
+				end
 			end
 		end
 		if unreadflag then
