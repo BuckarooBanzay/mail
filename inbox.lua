@@ -1,10 +1,6 @@
-
-
-
 mail.highlightedmessages = {}
 
 mail.messages = {}
-
 
 
 mail.inboxformspec =    "size[8,9;]"..
@@ -17,7 +13,15 @@ mail.inboxformspec =    "size[8,9;]"..
 			"button[6.25,6;1.5,0.5;markread;Mark Read]"..
 			"button[6.25,7;1.5,0.5;markunread;Mark Unread]"..
 			"button[6.25,8;1.5,0.5;about;About]"..
-			"textlist[0,0.5;6,8.5;message;"	
+			"textlist[0,0.5;6,8.5;message;"
+
+
+mail.registered_on_receives = {}
+function mail.register_on_receive(func)
+	mail.registered_on_receive[#mail.registered_on_receives + 1] = func
+end
+
+mail.receive_mail_message = "You have a new message from %s! Subject: %s\nTo view it, type /mail"
 
 function mail.send(src,dst,subject,body)
 	minetest.log("action", "[mail] '" .. src .. "' sends mail to '" .. dst ..
@@ -31,20 +35,25 @@ function mail.send(src,dst,subject,body)
 		body=body,
 		time=os.time()
 	})
-	for _,player in ipairs(minetest.get_connected_players()) do
+
+	for _, player in ipairs(minetest.get_connected_players()) do
 		local name = player:get_player_name()
 		if name == dst then
 			if subject == "" then subject = "(No subject)" end
-			minetest.chat_send_player(dst,string.format("You have a new message from %s!. Use the /mail command" .. (minetest.get_modpath("unified_inventory") and " or the mail button in the inventory " or " ") .. "to view it. Subject: %s",src,(string.len(subject) > 30 and string.sub(subject,1,27) .. "..." or subject)))
+			if string.len(subject) > 30 then
+				subject = string.sub(subject,1,27) .. "..."
+			end
+			minetest.chat_send_player(dst,
+					string.format(mail.receive_mail_message, src, subject))
 		end
 	end
 	mail.save()
 
-	-- webmail hook, if loaded
-	if mail.webmail_send_hook then
-		mail.webmail_send_hook(src, dst, subject, body)
+	for i=1, #mail.registered_on_receives do
+		if mail.registered_on_receives[i](src, dst, subject, body) then
+			break
+		end
 	end
-
 end
 
 function mail.showabout(name)
@@ -105,12 +114,9 @@ function mail.showcompose(name,defaulttgt,defaultsubj,defaultbody)
 	minetest.show_formspec(name,"mail:compose",formspec)
 end
 
-minetest.register_on_player_receive_fields(function(player,formname,fields)
-
-	if formname == "" and fields and fields.quit then
-		if minetest.get_modpath("unified_inventory") then
-			unified_inventory.set_inventory_formspec(player, "craft")
-		end
+function mail.handle_receivefields(player, formname, fields)
+	if formname == "" and fields and fields.quit and minetest.get_modpath("unified_inventory") then
+		unified_inventory.set_inventory_formspec(player, "craft")
 	end
 
 	if formname == "mail:about" then
@@ -200,5 +206,6 @@ minetest.register_on_player_receive_fields(function(player,formname,fields)
 	else
 		return false
 	end
-end)
-	
+end
+
+minetest.register_on_player_receive_fields(mail.handle_receivefields)

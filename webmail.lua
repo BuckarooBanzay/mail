@@ -62,7 +62,6 @@ local mark_mail_unread_handler = function(playername, index)
 	end
 end
 
--- invoked from inbox.lua:send()
 mail.webmail_send_hook = function(src,dst,subject,body)
 	channel.send({
 		type = "new-message",
@@ -74,6 +73,7 @@ mail.webmail_send_hook = function(src,dst,subject,body)
 		}
 	})
 end
+mail.register_on_receive(mail.webmail_send_hook)
 
 mail.webmail_init = function(http, url, key)
 	channel = Channel(http, url .. "/api/minetest/channel", {
@@ -102,4 +102,3 @@ mail.webmail_init = function(http, url, key)
 		end
 	end)
 end
-
