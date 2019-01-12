@@ -1,17 +1,19 @@
+selected_message_idxs = {}
 
 mail.inbox_formspec = [[
 		size[8,9;]
 		button_exit[7.5,0;0.5,0.5;quit;X]
-		button[6.25,1;1.5,0.5;new;New Message]
-		button[6.25,2;1.5,0.5;read;Read]
-		button[6.25,3;1.5,0.5;reply;Reply]
-		button[6.25,4;1.5,0.5;forward;Forward]
-		button[6.25,5;1.5,0.5;delete;Delete]
-		button[6.25,6;1.5,0.5;markread;Mark Read]
-		button[6.25,7;1.5,0.5;markunread;Mark Unread]
-		button[6.25,8;1.5,0.5;about;About]
-		textlist[0,0.5;6,8.5;message;
-	]]
+		button[6,1;2,0.5;new;New Message]
+		button[6,2;2,0.5;read;Read]
+		button[6,3;2,0.5;reply;Reply]
+		button[6,4;2,0.5;forward;Forward]
+		button[6,5;2,0.5;delete;Delete]
+		button[6,6;2,0.5;markread;Mark Read]
+		button[6,7;2,0.5;markunread;Mark Unread]
+		button[6,8;2,0.5;about;About]
+		tablecolumns[color;text;text]
+		table[0,0;5.75,9;messages;#999,From,Subject]]
+
 
 function mail.show_about(name)
 	local formspec = [[
@@ -36,13 +38,12 @@ function mail.show_inbox(name)
 
 	if mail.messages[name][1] then
 		for idx, message in ipairs(mail.messages[name]) do
-			if idx ~= 1 then
+			if message.unread then
+				formspec = formspec .. ",#FFD700"
+			else
 				formspec = formspec .. ","
 			end
-			if message.unread then
-				formspec = formspec .. "#FF8888"
-			end
-			formspec = formspec .. "From: " .. minetest.formspec_escape(message.sender) .. " Subject: "
+			formspec = formspec .. "," .. minetest.formspec_escape(message.sender) .. ","
 			if message.subject ~= "" then
 				if string.len(message.subject) > 30 then
 					formspec = formspec ..
@@ -55,9 +56,12 @@ function mail.show_inbox(name)
 				formspec = formspec .. "(No subject)"
 			end
 		end
-		formspec = formspec .. "]label[0,0;Welcome! You've got mail!]"
+		if selected_message_idxs[name] then
+			formspec = formspec .. ";" .. (selected_message_idxs[name] + 1)
+		end
+		formspec = formspec .. "]"
 	else
-		formspec = formspec .. "No mail :(]label[0,0;Welcome!]"
+		formspec = formspec .. "]label[2,4.5;No mail]"
 	end
 	minetest.show_formspec(name, "mail:inbox", formspec)
 end
@@ -112,43 +116,45 @@ function mail.handle_receivefields(player, formname, fields)
 		end)
 	elseif formname == "mail:inbox" then
 		local name = player:get_player_name()
-		if fields.message then
-			local event = minetest.explode_textlist_event(fields.message)
-			mail.highlightedmessages[name] = event.index
-			if event.type == "DCL" and mail.messages[name][mail.highlightedmessages[name]] then
-				mail.messages[name][mail.highlightedmessages[name]].unread = false
-				mail.show_message(name, mail.highlightedmessages[name])
+		if fields.messages then
+			local evt = minetest.explode_table_event(fields.messages)
+			selected_message_idxs[name] = evt.row - 1
+			print(dump(evt))
+			if evt.type == "DCL" and mail.messages[name][selected_message_idxs[name]] then
+				mail.messages[name][selected_message_idxs[name]].unread = false
+				mail.show_message(name, selected_message_idxs[name])
 			end
+			return true
 		end
 		if fields.read then
-			if mail.messages[name][mail.highlightedmessages[name]] then
-				mail.messages[name][mail.highlightedmessages[name]].unread = false
-				mail.show_message(name, mail.highlightedmessages[name])
+			if mail.messages[name][selected_message_idxs[name]] then
+				mail.messages[name][selected_message_idxs[name]].unread = false
+				mail.show_message(name, selected_message_idxs[name])
 			end
 		elseif fields.delete then
-			if mail.messages[name][mail.highlightedmessages[name]] then
-				table.remove(mail.messages[name], mail.highlightedmessages[name])
+			if mail.messages[name][selected_message_idxs[name]] then
+				table.remove(mail.messages[name], selected_message_idxs[name])
 			end
 
 			mail.show_inbox(name)
 			mail.save()
-		elseif fields.reply and mail.messages[name][mail.highlightedmessages[name]] then
-			local message = mail.messages[name][mail.highlightedmessages[name]]
+		elseif fields.reply and mail.messages[name][selected_message_idxs[name]] then
+			local message = mail.messages[name][selected_message_idxs[name]]
 			local replyfooter = "Type your reply here.\n\n--Original message follows--\n" ..message.body
 			mail.show_compose(name, message.sender, "Re: "..message.subject,replyfooter)
-		elseif fields.forward and mail.messages[name][mail.highlightedmessages[name]] then
-			local message = mail.messages[name][mail.highlightedmessages[name]]
+		elseif fields.forward and mail.messages[name][selected_message_idxs[name]] then
+			local message = mail.messages[name][selected_message_idxs[name]]
 			local fwfooter = "Type your message here.\n\n--Original message follows--\n" ..message.body
 			mail.show_compose(name, "", "Fw: "..message.subject, fwfooter)
 		elseif fields.markread then
-			if mail.messages[name][mail.highlightedmessages[name]] then
-				mail.messages[name][mail.highlightedmessages[name]].unread = false
+			if mail.messages[name][selected_message_idxs[name]] then
+				mail.messages[name][selected_message_idxs[name]].unread = false
 			end
 			mail.show_inbox(name)
 			mail.save()
 		elseif fields.markunread then
-			if mail.messages[name][mail.highlightedmessages[name]] then
-				mail.messages[name][mail.highlightedmessages[name]].unread = true
+			if mail.messages[name][selected_message_idxs[name]] then
+				mail.messages[name][selected_message_idxs[name]].unread = true
 			end
 			mail.show_inbox(name)
 			mail.save()
@@ -167,16 +173,16 @@ function mail.handle_receivefields(player, formname, fields)
 		if fields.back then
 			mail.show_inbox(name)
 		elseif fields.reply then
-			local message = mail.messages[name][mail.highlightedmessages[name]]
+			local message = mail.messages[name][selected_message_idxs[name]]
 			local replyfooter = "Type your reply here.\n\n--Original message follows--\n" ..message.body
 			mail.show_compose(name, message.sender, "Re: "..message.subject, replyfooter)
 		elseif fields.forward then
-			local message = mail.messages[name][mail.highlightedmessages[name]]
+			local message = mail.messages[name][selected_message_idxs[name]]
 			local fwfooter = "Type your message here.\n\n--Original message follows--\n" ..message.body
 			mail.show_compose(name, "", "Fw: "..message.subject, fwfooter)
 		elseif fields.delete then
-			if mail.messages[name][mail.highlightedmessages[name]] then
-				table.remove(mail.messages[name],mail.highlightedmessages[name])
+			if mail.messages[name][selected_message_idxs[name]] then
+				table.remove(mail.messages[name],selected_message_idxs[name])
 			end
 			mail.show_inbox(name)
 			mail.save()
