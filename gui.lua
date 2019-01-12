@@ -1,7 +1,13 @@
 selected_message_idxs = {}
 
-mail.inbox_formspec = [[
-		size[8,9;]
+local theme
+if minetest.get_modpath("default") then
+	theme = default.gui_bg .. default.gui_bg_img
+else
+	theme = ""
+end
+
+mail.inbox_formspec = "size[8,9;]" .. theme .. [[
 		button_exit[7.5,0;0.5,0.5;quit;X]
 		button[6,1;2,0.5;new;New Message]
 		button[6,2;2,0.5;read;Read]
@@ -27,7 +33,7 @@ function mail.show_about(name)
 			label[0,3;is NOT guaranteed to be private!]
 			label[0,3.5;Admins are able to view the messages]
 			label[0,4;of any player.]
-		]]
+		]] .. theme
 
 	minetest.show_formspec(name, "mail:about", formspec)
 end
@@ -77,7 +83,7 @@ function mail.show_message(name, msgnumber)
 			button[1,5;2,1;reply;Reply]
 			button[3,5;2,1;forward;Forward]
 			button[5,5;2,1;delete;Delete]
-		]]
+		]] .. theme
 
 	local sender = minetest.formspec_escape(message.sender)
 	local subject = minetest.formspec_escape(message.subject)
@@ -95,7 +101,7 @@ function mail.show_compose(name, defaulttgt, defaultsubj, defaultbody)
 			button[1,7;2,1;cancel;Cancel]
 			button[7.5,0;0.5,0.5;cancel;X]
 			button[5,7;2,1;send;Send]
-		]]
+		]] .. theme
 
 	formspec = string.format(formspec,
 		minetest.formspec_escape(defaulttgt),
