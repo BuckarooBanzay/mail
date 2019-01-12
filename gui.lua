@@ -39,37 +39,40 @@ function mail.show_about(name)
 end
 
 function mail.show_inbox(name)
-	local formspec = mail.inbox_formspec
+	local formspec = { mail.inbox_formspec }
 	mail.messages[name] = mail.messages[name] or {}
 
 	if mail.messages[name][1] then
 		for idx, message in ipairs(mail.messages[name]) do
 			if message.unread then
-				formspec = formspec .. ",#FFD700"
+				formspec[#formspec + 1] = ",#FFD700"
 			else
-				formspec = formspec .. ","
+				formspec[#formspec + 1] = ","
 			end
-			formspec = formspec .. "," .. minetest.formspec_escape(message.sender) .. ","
+			formspec[#formspec + 1] = ","
+			formspec[#formspec + 1] = minetest.formspec_escape(message.sender)
+			formspec[#formspec + 1] = ","
 			if message.subject ~= "" then
 				if string.len(message.subject) > 30 then
-					formspec = formspec ..
-							minetest.formspec_escape(string.sub(message.subject, 1, 27)) ..
-							"..."
+					formspec[#formspec + 1] =
+							minetest.formspec_escape(string.sub(message.subject, 1, 27))
+					formspec[#formspec + 1] = "..."
 				else
-					formspec = formspec .. minetest.formspec_escape(message.subject)
+					formspec[#formspec + 1] = minetest.formspec_escape(message.subject)
 				end
 			else
-				formspec = formspec .. "(No subject)"
+				formspec[#formspec + 1] = "(No subject)"
 			end
 		end
 		if selected_message_idxs[name] then
-			formspec = formspec .. ";" .. (selected_message_idxs[name] + 1)
+			formspec[#formspec + 1] = ";"
+			formspec[#formspec + 1] = tostring(selected_message_idxs[name] + 1)
 		end
-		formspec = formspec .. "]"
+		formspec[#formspec + 1] = "]"
 	else
-		formspec = formspec .. "]label[2,4.5;No mail]"
+		formspec[#formspec + 1] = "]label[2,4.5;No mail]"
 	end
-	minetest.show_formspec(name, "mail:inbox", formspec)
+	minetest.show_formspec(name, "mail:inbox", table.concat(formspec, ""))
 end
 
 function mail.show_message(name, msgnumber)
@@ -125,7 +128,6 @@ function mail.handle_receivefields(player, formname, fields)
 		if fields.messages then
 			local evt = minetest.explode_table_event(fields.messages)
 			selected_message_idxs[name] = evt.row - 1
-			print(dump(evt))
 			if evt.type == "DCL" and mail.messages[name][selected_message_idxs[name]] then
 				mail.messages[name][selected_message_idxs[name]].unread = false
 				mail.show_message(name, selected_message_idxs[name])
