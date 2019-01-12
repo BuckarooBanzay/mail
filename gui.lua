@@ -82,7 +82,7 @@ function mail.show_message(name, msgnumber)
 			button[7.5,0;0.5,0.5;back;X]
 			label[0,0;From: %s]
 			label[0,0.5;Subject: %s]
-			textarea[0.25,1;8,4;body;;%s]
+			textarea[0.25,1;8,4;;;%s]
 			button[1,5;2,1;reply;Reply]
 			button[3,5;2,1;forward;Forward]
 			button[5,5;2,1;delete;Delete]
