@@ -23,8 +23,8 @@ mail.inbox_formspec = "size[8,9;]" .. theme .. [[
 
 function mail.show_about(name)
 	local formspec = [[
-			size[4,5;]
-			button[3.5,0;0.5,0.5;back;X]
+			size[8,5;]
+			button[7.5,0;0.5,0.5;back;X]
 			label[0,0;Mail]
 			label[0,0.5;By cheapie]
 			label[0,1;http://github.com/cheapie/mail]
