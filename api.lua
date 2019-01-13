@@ -2,7 +2,7 @@ mail.messages = {}
 
 mail.registered_on_receives = {}
 function mail.register_on_receive(func)
-	mail.registered_on_receive[#mail.registered_on_receives + 1] = func
+	mail.registered_on_receives[#mail.registered_on_receives + 1] = func
 end
 
 mail.receive_mail_message = "You have a new message from %s! Subject: %s\nTo view it, type /mail"
