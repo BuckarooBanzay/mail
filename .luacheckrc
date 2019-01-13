@@ -16,5 +16,5 @@ read_globals = {
 	"dump",
 
 	-- Deps
-	"unified_inventory",
+	"unified_inventory", "default",
 }

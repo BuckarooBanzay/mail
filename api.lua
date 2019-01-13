@@ -1,4 +1,3 @@
-mail.highlightedmessages = {}
 mail.messages = {}
 
 mail.registered_on_receives = {}
