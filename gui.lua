@@ -78,14 +78,14 @@ end
 function mail.show_message(name, msgnumber)
 	local message = mail.messages[name][msgnumber]
 	local formspec = [[
-			size[8,6]
-			button[7.5,0;0.5,0.5;back;X]
+			size[8,7.2]
+			button[7,0;1,0.5;back;X]
 			label[0,0;From: %s]
 			label[0,0.5;Subject: %s]
-			textarea[0.25,1;8,4;;;%s]
-			button[1,5;2,1;reply;Reply]
-			button[3,5;2,1;forward;Forward]
-			button[5,5;2,1;delete;Delete]
+			textarea[0.25,1.25;8,6.25;;;%s]
+			button[1,6.7;2,1;reply;Reply]
+			button[3,6.7;2,1;forward;Forward]
+			button[5,6.7;2,1;delete;Delete]
 		]] .. theme
 
 	local sender = minetest.formspec_escape(message.sender)
@@ -97,13 +97,13 @@ end
 
 function mail.show_compose(name, defaulttgt, defaultsubj, defaultbody)
 	local formspec = [[
-			size[8,8]
+			size[8,7.2]
 			field[0.25,0.5;4,1;to;To:;%s]
-			field[0.25,1.5;4,1;subject;Subject:;%s]
-			textarea[0.25,2.5;8,4;body;;%s]
-			button[1,7;2,1;cancel;Cancel]
-			button[7.5,0;0.5,0.5;cancel;X]
-			button[5,7;2,1;send;Send]
+			field[0.25,1.7;8,1;subject;Subject:;%s]
+			textarea[0.25,2.4;8,5;body;;%s]
+			button[0.5,6.7;3,1;cancel;Cancel]
+			button[7,0;1,0.5;cancel;X]
+			button[4.5,6.7;3,1;send;Send]
 		]] .. theme
 
 	formspec = string.format(formspec,
