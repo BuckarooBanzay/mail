@@ -20,11 +20,11 @@
 	}
 
 	function NavBarContent(){
-		return [
+		return m("div", {class:"container"}, [
 			m("i", {class:"fa fa-envelope"}),
 			m("a", {class:"navbar-brand", href:"#"}, "Minetest webmail"),
 			m("div", {class:"navbar-collapse"}, NavLinks())
-		];
+		]);
 	}
 
 	m.mount(document.getElementById("nav"), {
@@ -35,4 +35,3 @@
 
 
 })();
-
