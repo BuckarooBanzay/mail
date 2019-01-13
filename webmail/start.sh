@@ -3,4 +3,3 @@
 export WEBMAILKEY=myserverkey
 
 node src/index.js
-
