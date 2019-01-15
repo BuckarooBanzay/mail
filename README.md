@@ -1,6 +1,8 @@
 Mail mod for Minetest
 ======
 
+[![Build Status](https://travis-ci.org/thomasrudin-mt/mail.svg?branch=master)](https://travis-ci.org/thomasrudin-mt/mail)
+
 This is a fork of cheapies mail mod
 
 It adds a mail-system that allows players to send each other messages in-game and via webmail (optional)
