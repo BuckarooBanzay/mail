@@ -72,6 +72,10 @@ Let me know if there are any (there are for sure:)
 
 See the "LICENSE" file
 
+# Contributors
+
+* Cheapie (initial idea/project)
+* Rubenwardy (lua/ui improvements)
 
 # Old/Historic stuff
 * Old forum topic: https://forum.minetest.net/viewtopic.php?t=14464
