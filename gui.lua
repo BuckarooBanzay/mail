@@ -82,7 +82,7 @@ function mail.show_message(name, msgnumber)
 			button[7,0;1,0.5;back;X]
 			label[0,0;From: %s]
 			label[0,0.5;Subject: %s]
-			textarea[0.25,1.25;8,6.25;;;%s]
+			textarea[0.25,1.25;8,6.25;body;;%s]
 			button[1,6.7;2,1;reply;Reply]
 			button[3,6.7;2,1;forward;Forward]
 			button[5,6.7;2,1;delete;Delete]
@@ -92,6 +92,8 @@ function mail.show_message(name, msgnumber)
 	local subject = minetest.formspec_escape(message.subject)
 	local body = minetest.formspec_escape(message.body)
 	formspec = string.format(formspec, sender, subject, body)
+
+	print(formspec)
 	minetest.show_formspec(name,"mail:message",formspec)
 end
 
