@@ -93,7 +93,6 @@ function mail.show_message(name, msgnumber)
 	local body = minetest.formspec_escape(message.body)
 	formspec = string.format(formspec, sender, subject, body)
 
-	print(formspec)
 	minetest.show_formspec(name,"mail:message",formspec)
 end
 
