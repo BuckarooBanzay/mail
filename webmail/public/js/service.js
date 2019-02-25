@@ -37,7 +37,7 @@ service.login = function(username, password){
 			//fetch mails after login
 			service.fetchMails();
 		} else {
-			state.errorMsg = "Login failed!";
+			state.errorMsg = "Login failed: " + result.message;
 		}
 	})
 	.catch(function(err){

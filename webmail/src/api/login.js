@@ -17,12 +17,17 @@ app.post('/api/login', jsonParser, function(req, res){
 
 	doLogin(req.body.username, req.body.password)
 	.then(result => {
-		var t = token.sign({
-			username: req.body.username
-		});
+		var t;
+
+		if (result.success){
+			t = token.sign({
+				username: req.body.username
+			});
+		}
 
 		res.json({
 			success: result.success,
+			message: result.message,
 			token: t
 		});
 	})

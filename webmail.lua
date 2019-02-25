@@ -1,3 +1,7 @@
+-- false per default
+local disallow_banned_players = minetest.settings:get("webmail.disallow_banned_players") == "true"
+local has_xban2_mod = minetest.get_modpath("xban2")
+
 local MP = minetest.get_modpath(minetest.get_current_modname())
 local Channel = dofile(MP .. "/util/channel.lua")
 local channel
@@ -8,16 +12,31 @@ local function auth_handler(auth)
 	minetest.log("action", "[webmail] auth: " .. auth.name)
 
 	local success = false
-	local entry = handler.get_auth(auth.name)
-	if entry and minetest.check_password_entry(auth.name, entry.password, auth.password) then
-		success = true
+	local banned = false
+	local message = ""
+
+	if disallow_banned_players and has_xban2_mod then
+		-- check xban db
+		local xbanentry = xban.find_entry(auth.name)
+		if xbanentry and xbanentry.banned then
+			banned = true
+			message = "Banned!"
+		end
+	end
+
+	if not banned then
+		local entry = handler.get_auth(auth.name)
+		if entry and minetest.check_password_entry(auth.name, entry.password, auth.password) then
+			success = true
+		end
 	end
 
 	channel.send({
 		type = "auth",
 		data = {
 			name = auth.name,
-			success = success
+			success = success,
+			message = message
 		}
 	})
 end
