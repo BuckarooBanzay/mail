@@ -46,6 +46,9 @@ secure.http_mods = mail
 webmail.url = http://127.0.0.1:8080
 # the secret key previously generated (same as in "webmail/start.sh")
 webmail.key = myserverkey
+
+# optionally, if you have xban2 and don't want banned users to login:
+webmail.disallow_banned_players = true
 ```
 
 # Commands/Howto
