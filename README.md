@@ -75,6 +75,9 @@ Let me know if there are any (there are for sure:)
 
 See the "LICENSE" file
 
+# Textures
+* textures/email_mail.png (https://github.com/rubenwardy/email.git WTFPL)
+
 # Contributors
 
 * Cheapie (initial idea/project)
