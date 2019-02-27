@@ -1,5 +1,5 @@
 minetest.register_on_joinplayer(function(player)
-	minetest.after(0, function(name)
+	minetest.after(2, function(name)
 		local unreadflag = false
 		if mail.messages[name] then
 			for _, message in ipairs(mail.messages[name]) do
