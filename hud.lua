@@ -9,7 +9,7 @@ minetest.register_on_joinplayer(function(player)
 		hud_elem_type = "image",
 		name = "MailIcon",
 		position = {x=0.52, y=0.52},
-		text="email_mail.png",
+		text="",
 		scale = {x=1,y=1},
 		alignment = {x=0.5, y=0.5},
 	})
@@ -18,7 +18,7 @@ minetest.register_on_joinplayer(function(player)
 		hud_elem_type = "text",
 		name = "MailText",
 		position = {x=0.55, y=0.52},
-		text= #inbox .. " /inbox",
+		text= "",
 		scale = {x=1,y=1},
 		alignment = {x=0.5, y=0.5},
 	})
@@ -49,10 +49,10 @@ mail.hud_update = function(playername, messages)
 	end
 
 	if unreadcount == 0 then
-		player:hud_change(data.imageid, "image", "")
+		player:hud_change(data.imageid, "text", "")
 		player:hud_change(data.textid, "text", "")
 	else
-		player:hud_change(data.imageid, "image", "email_mail.png")
+		player:hud_change(data.imageid, "text", "email_mail.png")
 		player:hud_change(data.textid, "text", unreadcount .. " /mail")
 	end
 

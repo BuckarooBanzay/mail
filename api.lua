@@ -31,7 +31,7 @@ function mail.send(m) -- see: "Mail format"
 				m.subject = string.sub(m.subject,1,27) .. "..."
 			end
 			minetest.chat_send_player(m.dst,
-					string.format(m.receive_mail_message, m.src, m.subject))
+					string.format(mail.receive_mail_message, m.src, m.subject))
 		end
 	end
 

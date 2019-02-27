@@ -6,11 +6,11 @@ function getMailFile(playername)
 end
 
 mail.getMessages = function(playername)
-	local file = io.open(getMailFile(playername),"w", "r")
+	local file = io.open(getMailFile(playername), "r")
 	local messages = {}
 	if file then
 		local json = file:read("*a")
-		messages = minetest.parse_json(json) or {}
+		messages = minetest.parse_json(json or "[]") or {}
 		mail.hud_update(playername, messages)
 		file:close()
 	end
@@ -29,5 +29,3 @@ mail.setMessages = function(playername, messages)
 		return false
 	end
 end
-
-

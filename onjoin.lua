@@ -4,7 +4,7 @@ minetest.register_on_joinplayer(function(player)
 
 		local unreadcount = 0
 
-		for _, message in ipairs(messages) do
+		for _, message in pairs(messages) do
 			if message.unread then
 				unreadcount = unreadcount + 1
 			end
@@ -12,7 +12,7 @@ minetest.register_on_joinplayer(function(player)
 
 		if unreadcount > 0 then
 			minetest.chat_send_player(name,
-				"(" ..  unreadcount .. ") You have mail! Type /mail to recieve")
+				"(" ..  unreadcount .. ") You have mail! Type /mail to read")
 
 		end
 	end, player:get_player_name())

@@ -12,7 +12,7 @@ mail.migrate = function()
 		local oldmails = minetest.deserialize(data)
 		file:close()
 
-		for name, oldmessages in pairs(oldmails)
+		for name, oldmessages in pairs(oldmails) do
 			mail.setMessages(name, oldmessages)
 		end
 

@@ -7,7 +7,7 @@ mail.getAttachmentInventory = function(playername)
 end
 
 mail.getAttachmentInventoryName = function(playername)
-	return "mail:" .. name
+	return "mail:" .. playername
 end
 
 
@@ -21,5 +21,7 @@ end)
 minetest.register_on_leaveplayer(function(player)
 	local name = player:get_player_name()
 	invmap[name] = nil
-	minetest.remove_detached_inventory(mail.getAttachmentInventoryName(name))
+	if minetest.remove_detached_inventory then
+		minetest.remove_detached_inventory(mail.getAttachmentInventoryName(name))
+	end
 end)

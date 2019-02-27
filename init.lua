@@ -24,6 +24,7 @@ dofile(MP .. "/hud.lua")
 dofile(MP .. "/storage.lua")
 dofile(MP .. "/api.lua")
 dofile(MP .. "/gui.lua")
+dofile(MP .. "/onjoin.lua")
 
 -- optional webmail stuff below
 
