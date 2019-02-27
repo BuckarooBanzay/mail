@@ -220,13 +220,7 @@ function mail.handle_receivefields(player, formname, fields)
 			mail.show_inbox(player:get_player_name())
 		end)
 		return true
-	elseif formname == "mail:unreadnag" then
-		if fields.yes then
-			mail.show_inbox(player:get_player_name())
-		else
-			minetest.chat_send_player(player:get_player_name(), mail.read_later_message)
-		end
-		return true
+
 	elseif fields.mail then
 		mail.show_inbox(player:get_player_name())
 	else
