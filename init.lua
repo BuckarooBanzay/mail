@@ -1,9 +1,12 @@
-mail = {}
+mail = {
+	maildir = minetest.get_worldpath().."/mails"
+}
 
 
 local MP = minetest.get_modpath(minetest.get_current_modname())
 dofile(MP .. "/chatcommands.lua")
-dofile(MP .. "/persistence.lua")
+dofile(MP .. "/migrate.lua")
+dofile(MP .. "/storage.lua")
 dofile(MP .. "/api.lua")
 dofile(MP .. "/gui.lua")
 
@@ -29,7 +32,5 @@ if http then
 	mail.webmail_init(http, webmail_url, webmail_key)
 end
 
-
-
-
-mail.load()
+-- migrate storage
+mail.migrate()

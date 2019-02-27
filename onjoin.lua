@@ -1,13 +1,14 @@
 minetest.register_on_joinplayer(function(player)
 	minetest.after(2, function(name)
+		local messages = mail.getMessages(name)
 		local unreadflag = false
-		if mail.messages[name] then
-			for _, message in ipairs(mail.messages[name]) do
-				if message.unread then
-					unreadflag = true
-				end
+
+		for _, message in ipairs(messages) do
+			if message.unread then
+				unreadflag = true
 			end
 		end
+
 		if unreadflag then
 			minetest.show_formspec(name, "mail:unreadnag",
 				"size[3,2]" ..

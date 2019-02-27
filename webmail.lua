@@ -50,32 +50,39 @@ end
 
 -- get player messages request from webmail
 local function get_player_messages_handler(playername)
+	local messages = mail.getMessages(playername)
 	channel.send({
 		type = "player-messages",
 		playername = playername,
-		data = mail.messages[playername]
+		data = messages
 	})
 end
 
 -- remove mail
 local function delete_mail_handler(playername, index)
-	if mail.messages[playername] and mail.messages[playername][index] then
-		table.remove(mail.messages[playername], index)
+	local messages = mail.getMessages(playername)
+	if messages[index] then
+		table.remove(messages, index)
 	end
+	mail.setMessages(playername, messages)
 end
 
 -- mark mail as read
 local function mark_mail_read_handler(playername, index)
-	if mail.messages[playername] and mail.messages[playername][index] then
-		mail.messages[playername][index].unread = false
+	local messages = mail.getMessages(playername)
+	if messages[index] then
+		messages[index].unread = false
 	end
+	mail.setMessages(playername, messages)
 end
 
 -- mark mail as unread
 local function mark_mail_unread_handler(playername, index)
-	if mail.messages[playername] and mail.messages[playername][index] then
-		mail.messages[playername][index].unread = true
+	local messages = mail.getMessages(playername)
+	if messages[index] then
+		messages[index].unread = true
 	end
+	mail.setMessages(playername, messages)
 end
 
 function mail.webmail_send_hook(src,dst,subject,body)

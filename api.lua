@@ -1,4 +1,3 @@
-mail.messages = {}
 
 mail.registered_on_receives = {}
 function mail.register_on_receive(func)
@@ -12,15 +11,16 @@ function mail.send(src, dst, subject, body)
 	minetest.log("action", "[mail] '" .. src .. "' sends mail to '" .. dst ..
 		"' with subject '" .. subject .. "' and body: '" .. body .. "'")
 
-	mail.messages[dst] = mail.messages[dst] or {}
+	local messages = mail.getMessages(dst)
 
-	table.insert(mail.messages[dst], 1, {
+	table.insert(messages, 1, {
 		unread  = true,
 		sender  = src,
 		subject = subject,
 		body    = body,
 		time    = os.time(),
 	})
+	mail.setMessages(dst, messages)
 
 	for _, player in ipairs(minetest.get_connected_players()) do
 		local name = player:get_player_name()

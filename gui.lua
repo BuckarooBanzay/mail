@@ -40,10 +40,10 @@ end
 
 function mail.show_inbox(name)
 	local formspec = { mail.inbox_formspec }
-	mail.messages[name] = mail.messages[name] or {}
+	local messages = mail.getMessages(name)
 
-	if mail.messages[name][1] then
-		for idx, message in ipairs(mail.messages[name]) do
+	if messages[1] then
+		for idx, message in ipairs(messages) do
 			if message.unread then
 				formspec[#formspec + 1] = ",#FFD700"
 			else
@@ -76,7 +76,8 @@ function mail.show_inbox(name)
 end
 
 function mail.show_message(name, msgnumber)
-	local message = mail.messages[name][msgnumber]
+	local messages = mail.getMessages(name)
+	local message = messages[msgnumber]
 	local formspec = [[
 			size[8,7.2]
 			button[7,0;1,0.5;back;X]
@@ -124,78 +125,92 @@ function mail.handle_receivefields(player, formname, fields)
 		minetest.after(0.5, function()
 			mail.show_inbox(player:get_player_name())
 		end)
+
 	elseif formname == "mail:inbox" then
 		local name = player:get_player_name()
+		local messages = mail.getMessages(name)
+
 		if fields.messages then
 			local evt = minetest.explode_table_event(fields.messages)
 			selected_message_idxs[name] = evt.row - 1
-			if evt.type == "DCL" and mail.messages[name][selected_message_idxs[name]] then
-				mail.messages[name][selected_message_idxs[name]].unread = false
+			if evt.type == "DCL" and messages[selected_message_idxs[name]] then
+				messages[selected_message_idxs[name]].unread = false
 				mail.show_message(name, selected_message_idxs[name])
 			end
+			mail.setMessages(name, messages)
 			return true
 		end
 		if fields.read then
-			if mail.messages[name][selected_message_idxs[name]] then
-				mail.messages[name][selected_message_idxs[name]].unread = false
+			if messages[selected_message_idxs[name]] then
+				messages[selected_message_idxs[name]].unread = false
 				mail.show_message(name, selected_message_idxs[name])
 			end
+
 		elseif fields.delete then
-			if mail.messages[name][selected_message_idxs[name]] then
-				table.remove(mail.messages[name], selected_message_idxs[name])
+			if messages[[selected_message_idxs[name]] then
+				table.remove(messages, selected_message_idxs[name])
 			end
 
 			mail.show_inbox(name)
-			mail.save()
-		elseif fields.reply and mail.messages[name][selected_message_idxs[name]] then
-			local message = mail.messages[name][selected_message_idxs[name]]
+		elseif fields.reply and messages[selected_message_idxs[name]] then
+			local message = messages[selected_message_idxs[name]]
 			local replyfooter = "Type your reply here.\n\n--Original message follows--\n" ..message.body
 			mail.show_compose(name, message.sender, "Re: "..message.subject,replyfooter)
-		elseif fields.forward and mail.messages[name][selected_message_idxs[name]] then
-			local message = mail.messages[name][selected_message_idxs[name]]
+
+		elseif fields.forward and messages[selected_message_idxs[name]] then
+			local message = messages[selected_message_idxs[name]]
 			local fwfooter = "Type your message here.\n\n--Original message follows--\n" ..message.body
 			mail.show_compose(name, "", "Fw: "..message.subject, fwfooter)
+
 		elseif fields.markread then
-			if mail.messages[name][selected_message_idxs[name]] then
-				mail.messages[name][selected_message_idxs[name]].unread = false
+			if messages[selected_message_idxs[name]] then
+				messages[selected_message_idxs[name]].unread = false
 			end
 			mail.show_inbox(name)
-			mail.save()
+
 		elseif fields.markunread then
-			if mail.messages[name][selected_message_idxs[name]] then
-				mail.messages[name][selected_message_idxs[name]].unread = true
+			if messages[selected_message_idxs[name]] then
+				messages[selected_message_idxs[name]].unread = true
 			end
 			mail.show_inbox(name)
-			mail.save()
+
 		elseif fields.new then
 			mail.show_compose(name,"","","Type your message here.")
+
 		elseif fields.quit then
 			if minetest.get_modpath("unified_inventory") then
 				unified_inventory.set_inventory_formspec(player, "craft")
 			end
+
 		elseif fields.about then
 			mail.show_about(name)
+
 		end
+
+		mail.setMessages(name, messages)
 		return true
 	elseif formname == "mail:message" then
 		local name = player:get_player_name()
+		local messages = mail.getMessages(name)
+
 		if fields.back then
 			mail.show_inbox(name)
 		elseif fields.reply then
-			local message = mail.messages[name][selected_message_idxs[name]]
+			local message = messages[selected_message_idxs[name]]
 			local replyfooter = "Type your reply here.\n\n--Original message follows--\n" ..message.body
 			mail.show_compose(name, message.sender, "Re: "..message.subject, replyfooter)
 		elseif fields.forward then
-			local message = mail.messages[name][selected_message_idxs[name]]
+			local message = messages[selected_message_idxs[name]]
 			local fwfooter = "Type your message here.\n\n--Original message follows--\n" ..message.body
 			mail.show_compose(name, "", "Fw: "..message.subject, fwfooter)
 		elseif fields.delete then
-			if mail.messages[name][selected_message_idxs[name]] then
-				table.remove(mail.messages[name],selected_message_idxs[name])
+			if messages[selected_message_idxs[name]] then
+				table.remove(messages,selected_message_idxs[name])
 			end
 			mail.show_inbox(name)
-			mail.save()
 		end
+
+		mail.setMessages(name, messages)
 		return true
 	elseif formname == "mail:compose" then
 		if fields.send then
