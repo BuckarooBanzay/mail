@@ -1,5 +1,4 @@
 -- false per default
-local disallow_banned_players = minetest.settings:get("webmail.disallow_banned_players") == "true"
 local has_xban2_mod = minetest.get_modpath("xban2")
 
 local MP = minetest.get_modpath(minetest.get_current_modname())
@@ -15,7 +14,7 @@ local function auth_handler(auth)
 	local banned = false
 	local message = ""
 
-	if disallow_banned_players and has_xban2_mod then
+	if mail.webmail.disallow_banned_players and has_xban2_mod then
 		-- check xban db
 		local xbanentry = xban.find_entry(auth.name)
 		if xbanentry and xbanentry.banned then
@@ -45,7 +44,7 @@ end
 local function send_handler(sendmail)
 	-- send mail from webclient
 	minetest.log("action", "[webmail] sending mail from webclient: " .. sendmail.src .. " -> " .. sendmail.dst)
-	mail.send(sendmail.src, sendmail.dst, sendmail.subject, sendmail.body)
+	mail.send(sendmail)
 end
 
 -- get player messages request from webmail
@@ -85,15 +84,10 @@ local function mark_mail_unread_handler(playername, index)
 	mail.setMessages(playername, messages)
 end
 
-function mail.webmail_send_hook(src,dst,subject,body)
+function mail.webmail_send_hook(m)
 	channel.send({
 		type = "new-message",
-		data = {
-			src=src,
-			dst=dst,
-			subject=subject,
-			body=body
-		}
+		data = m
 	})
 end
 mail.register_on_receive(mail.webmail_send_hook)

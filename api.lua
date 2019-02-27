@@ -1,3 +1,4 @@
+-- see: mail.md
 
 mail.registered_on_receives = {}
 function mail.register_on_receive(func)
@@ -7,36 +8,35 @@ end
 mail.receive_mail_message = "You have a new message from %s! Subject: %s\nTo view it, type /mail"
 mail.read_later_message = "You can read your messages later by using the /mail command"
 
-function mail.send(src, dst, subject, body)
-	minetest.log("action", "[mail] '" .. src .. "' sends mail to '" .. dst ..
-		"' with subject '" .. subject .. "' and body: '" .. body .. "'")
+function mail.send(m) -- see: "Mail format"
+	minetest.log("action", "[mail] '" .. m.src .. "' sends mail to '" .. m.dst ..
+		"' with subject '" .. m.subject .. "' and body: '" .. m.body .. "'")
 
-	local messages = mail.getMessages(dst)
+	local messages = mail.getMessages(m.dst)
 
 	table.insert(messages, 1, {
 		unread  = true,
-		sender  = src,
-		subject = subject,
-		body    = body,
+		sender  = m.src,
+		subject = m.subject,
+		body    = m.body,
 		time    = os.time(),
 	})
-	mail.setMessages(dst, messages)
+	mail.setMessages(m.dst, messages)
 
 	for _, player in ipairs(minetest.get_connected_players()) do
 		local name = player:get_player_name()
-		if name == dst then
-			if subject == "" then subject = "(No subject)" end
-			if string.len(subject) > 30 then
-				subject = string.sub(subject,1,27) .. "..."
+		if name == m.dst then
+			if m.subject == "" then m.subject = "(No subject)" end
+			if string.len(m.subject) > 30 then
+				m.subject = string.sub(m.subject,1,27) .. "..."
 			end
-			minetest.chat_send_player(dst,
-					string.format(mail.receive_mail_message, src, subject))
+			minetest.chat_send_player(m.dst,
+					string.format(m.receive_mail_message, m.src, m.subject))
 		end
 	end
-	mail.save()
 
 	for i=1, #mail.registered_on_receives do
-		if mail.registered_on_receives[i](src, dst, subject, body) then
+		if mail.registered_on_receives[i](m) then
 			break
 		end
 	end

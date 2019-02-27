@@ -7,6 +7,10 @@ This is a fork of cheapies mail mod
 
 It adds a mail-system that allows players to send each other messages in-game and via webmail (optional)
 
+# Docs
+
+* [Api](./api.md)
+
 # Screenshots
 
 Ingame mail

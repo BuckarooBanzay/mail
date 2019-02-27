@@ -214,7 +214,12 @@ function mail.handle_receivefields(player, formname, fields)
 		return true
 	elseif formname == "mail:compose" then
 		if fields.send then
-			mail.send(player:get_player_name(), fields.to, fields.subject, fields.body)
+			mail.send({
+				src = player:get_player_name(),
+				dst = fields.to,
+				subject = fields.subject,
+				body = fields.body
+			})
 		end
 		minetest.after(0.5, function()
 			mail.show_inbox(player:get_player_name())
