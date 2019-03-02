@@ -147,7 +147,7 @@ function mail.handle_receivefields(player, formname, fields)
 			end
 
 		elseif fields.delete then
-			if messages[[selected_message_idxs[name]] then
+			if messages[selected_message_idxs[name]] then
 				table.remove(messages, selected_message_idxs[name])
 			end
 
