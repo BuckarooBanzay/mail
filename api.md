@@ -14,12 +14,12 @@ mail = {
 ```
 
 ## Sending mail
-Old variant (pre-1.0)
+Old variant (pre-1.1)
 ```lua
 mail.send("source name", "destination name", "subject line", "mail body")
 ```
 
-New variant (1.0+)
+New variant (1.1+)
 ```lua
 mail.send({
 	src = "source name",
