@@ -17,4 +17,7 @@ read_globals = {
 
 	-- Deps
 	"unified_inventory", "default",
+
+	-- optional mods
+	"xban"
 }
