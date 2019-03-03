@@ -13,6 +13,16 @@ mail = {
 }
 ```
 
+## Sending mail
+```lua
+mail.send({
+	src = "source name",
+	dst = "destination name",
+	subject = "subject line",
+	body = "mail body"
+})
+```
+
 # Hooks
 On-receive mail hook:
 

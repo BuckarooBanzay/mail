@@ -8,7 +8,26 @@ end
 mail.receive_mail_message = "You have a new message from %s! Subject: %s\nTo view it, type /mail"
 mail.read_later_message = "You can read your messages later by using the /mail command"
 
-function mail.send(m) -- see: "Mail format"
+--[[
+mail sending function, can be invoked with one object argument (new api) or
+all 4 parameters (old compat version)
+see: "Mail format" api.md
+--]]
+function mail.send(src, dst, subject, body)
+	local m
+	if dst == nil and subject == nil and body == nil then
+		-- new format (one object param)
+		m = src
+	else
+		-- old format
+		m = {}
+		m.src = src
+		m.dst = dst
+		m.subject = subject
+		m.body = body
+	end
+
+
 	minetest.log("action", "[mail] '" .. m.src .. "' sends mail to '" .. m.dst ..
 		"' with subject '" .. m.subject .. "' and body: '" .. m.body .. "'")
 
