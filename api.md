@@ -14,6 +14,12 @@ mail = {
 ```
 
 ## Sending mail
+Old variant (pre-1.0)
+```lua
+mail.send("source name", "destination name", "subject line", "mail body")
+```
+
+New variant (1.0+)
 ```lua
 mail.send({
 	src = "source name",
