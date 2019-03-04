@@ -2,7 +2,8 @@
 -- TODO: maybe local cache?
 
 function getMailFile(playername)
-	return mail.maildir .. "/" .. playername .. ".json"
+	local saneplayername = string.gsub(playername, "[.|/]", "")
+	return mail.maildir .. "/" .. saneplayername .. ".json"
 end
 
 mail.getMessages = function(playername)
