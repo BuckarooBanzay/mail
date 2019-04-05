@@ -25,6 +25,7 @@ func Serve(ctx *app.App) {
 	mux.Handle("/css/bundle.css", bundle.NewCSSHandler(ctx.Config.Webdev))
 
 	mux.Handle("/api/config", &ConfigHandler{ctx: ctx})
+	mux.Handle("/api/login", &LoginHandler{ctx: ctx})
 
 	err := http.ListenAndServe(":"+strconv.Itoa(ctx.Config.Port), Logger(mux))
 	if err != nil {
