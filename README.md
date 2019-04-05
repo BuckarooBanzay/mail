@@ -18,7 +18,7 @@ Webmail
 
 ## In-game mail mod
 
-Install it like any other mod: copy the directory to your "worldmods" folder
+Install it like any other mod: copy the directory `mail_mod` to your "worldmods" folder
 
 ## Webmail
 
@@ -74,4 +74,3 @@ See the "LICENSE" file
 # Old/Historic stuff
 * Old forum topic: https://forum.minetest.net/viewtopic.php?t=14464
 * Old mod: https://cheapiesystems.com/git/mail/
-
