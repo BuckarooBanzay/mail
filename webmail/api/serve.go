@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"webmail/api/security"
 	"webmail/api/util"
 	"webmail/app"
 	"webmail/bundle"
@@ -37,7 +38,7 @@ func Serve(ctx *app.App) {
 		Output: out,
 	}
 
-	mux.Handle("/api/channel", &channel)
+	mux.Handle("/api/channel", security.SecureKey(ctx.Config.SecretKey, &channel))
 
 	err := http.ListenAndServe(":"+strconv.Itoa(ctx.Config.Port), Logger(mux))
 	if err != nil {

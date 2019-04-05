@@ -5,19 +5,19 @@ import (
 	"net/http"
 )
 
-type SecureHandler struct {
+type SecureTokenHandler struct {
 	secured http.Handler
 	key     string
 }
 
-func Secure(key string, secured http.Handler) *SecureHandler {
-	return &SecureHandler{
+func SecureToken(key string, secured http.Handler) *SecureTokenHandler {
+	return &SecureTokenHandler{
 		secured: secured,
 		key:     key,
 	}
 }
 
-func (this *SecureHandler) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
+func (this *SecureTokenHandler) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	hs256 := jwt.NewHMAC(jwt.SHA256, []byte(this.key))
 
 	token := req.Header.Get("Authorization")
