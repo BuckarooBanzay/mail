@@ -1,8 +1,8 @@
 package bundle
 
 import (
-	"webmail/vfs"
 	"encoding/json"
+	"webmail/vfs"
 )
 
 func getManifest(useLocal bool) *Manifest {
