@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"webmail/app"
+	"webmail/api/security"
 
 	"github.com/gbrlsnchs/jwt/v3"
 )
@@ -33,7 +34,7 @@ func (this *LoginHandler) ServeHTTP(resp http.ResponseWriter, req *http.Request)
 
 	hs256 := jwt.NewHMAC(jwt.SHA256, []byte(this.ctx.Config.SecretKey))
 	h := jwt.Header{}
-	jot := &Token{
+	jot := &security.Token{
 		Username: data.Username,
 	}
 

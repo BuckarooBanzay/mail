@@ -3,6 +3,8 @@ package api
 import (
 	"net/http"
 	"strconv"
+
+	"webmail/api/util"
 	"webmail/app"
 	"webmail/bundle"
 	"webmail/vfs"
@@ -26,6 +28,16 @@ func Serve(ctx *app.App) {
 
 	mux.Handle("/api/config", &ConfigHandler{ctx: ctx})
 	mux.Handle("/api/login", &LoginHandler{ctx: ctx})
+
+	in := make(chan []byte)
+	out := make(chan []byte)
+
+	channel := util.Channel{
+		Input: in,
+		Output: out,
+	}
+
+	mux.Handle("/api/channel", &channel)
 
 	err := http.ListenAndServe(":"+strconv.Itoa(ctx.Config.Port), Logger(mux))
 	if err != nil {
