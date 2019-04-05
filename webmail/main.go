@@ -3,31 +3,15 @@ package main
 import (
 	"flag"
 	"fmt"
-	"net/http"
 	"runtime"
-	"strconv"
 
+	"webmail/api"
 	"webmail/app"
-	"webmail/bundle"
-	"webmail/vfs"
 
 	"github.com/sirupsen/logrus"
 )
 
 //go:generate sh -c "go run github.com/mjibson/esc -o vfs/static.go -prefix='static/' -pkg vfs static"
-
-func logger(h http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		fields := logrus.Fields{
-			"remote": r.RemoteAddr,
-			"method": r.Method,
-			"url":    r.URL,
-		}
-		logrus.WithFields(fields).Debug("Request")
-
-		h.ServeHTTP(w, r)
-	})
-}
 
 func main() {
 
@@ -73,16 +57,7 @@ func main() {
 		logrus.SetLevel(logrus.InfoLevel)
 	}
 
-	fields := logrus.Fields{
-		"port": cfg.Port,
-	}
-	logrus.WithFields(fields).Info("Starting webmail")
+	ctx := app.Setup(cfg)
 
-	mux := http.NewServeMux()
-	mux.Handle("/", http.FileServer(vfs.FS(false)))
-	mux.Handle("/js/bundle.js", bundle.NewJsHandler(false))
-	mux.Handle("/css/bundle.css", bundle.NewCSSHandler(false))
-
-	logrus.Error(http.ListenAndServe(":"+strconv.Itoa(cfg.Port), logger(mux)))
-
+	api.Serve(ctx)
 }

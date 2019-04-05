@@ -15,6 +15,7 @@ type Config struct {
 	ConfigVersion int    `json:"configversion"`
 	Port          int    `json:"port"`
 	SecretKey     string `json:"secretkey"`
+	Webdev        bool   `json:"webdev"`
 }
 
 func ParseConfig(filename string) (*Config, error) {
@@ -23,6 +24,7 @@ func ParseConfig(filename string) (*Config, error) {
 		ConfigVersion: 1,
 		Port:          8080,
 		SecretKey:     RandStringRunes(16),
+		Webdev:        false,
 	}
 
 	info, err := os.Stat(filename)
