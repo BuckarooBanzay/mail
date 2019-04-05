@@ -7,7 +7,7 @@ import (
 func Setup(cfg *Config) *App {
 	a := App{}
 	a.Config = cfg
-	a.WebEventbus = eventbus.New()
+	a.Events = eventbus.New()
 
 	return &a
 }

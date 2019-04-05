@@ -8,6 +8,7 @@ import (
 	"webmail/api/util"
 	"webmail/app"
 	"webmail/bundle"
+	"webmail/minetest"
 	"webmail/vfs"
 
 	"github.com/sirupsen/logrus"
@@ -34,9 +35,15 @@ func Serve(ctx *app.App) {
 	out := make(chan []byte)
 
 	channel := util.Channel{
-		Input: in,
+		Input:  in,
 		Output: out,
 	}
+
+	go func() {
+		for true {
+			minetest.HandleEvents(ctx.Events, out)
+		}
+	}()
 
 	mux.Handle("/api/channel", security.SecureKey(ctx.Config.SecretKey, &channel))
 

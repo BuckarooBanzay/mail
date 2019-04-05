@@ -5,6 +5,6 @@ import (
 )
 
 type App struct {
-	Config      *Config
-	WebEventbus *eventbus.Eventbus
+	Config *Config
+	Events *eventbus.Eventbus
 }

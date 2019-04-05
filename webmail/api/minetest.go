@@ -1,12 +1,10 @@
 package api
 
-
 import (
 	"net/http"
 
 	"webmail/app"
 )
-
 
 type MinetestHandler struct {
 	ctx *app.App

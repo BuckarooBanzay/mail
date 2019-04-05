@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"webmail/app"
 	"webmail/api/security"
+	"webmail/app"
 
 	"github.com/gbrlsnchs/jwt/v3"
 )

@@ -52,8 +52,10 @@ local function get_player_messages_handler(playername)
 	local messages = mail.getMessages(playername)
 	channel.send({
 		type = "player-messages",
-		playername = playername,
-		data = messages
+		data = {
+			playername = playername,
+			messages = messages
+		}
 	})
 end
 
