@@ -1,11 +1,9 @@
-
 -- bi-directional http-channel
 -- with long-poll GET and POST on the same URL
 
 local debug = false
 
-local Channel = function(http, url, cfg)
-
+local function Channel(http, url, cfg)
 	cfg = cfg or {}
 	local extra_headers = cfg.extra_headers or {}
 	local timeout = cfg.timeout or 1
@@ -14,7 +12,7 @@ local Channel = function(http, url, cfg)
 
 	-- assemble post-header with json content
 	local post_headers = { "Content-Type: application/json" }
-	for _,header in pairs(cfg.extra_headers or {}) do
+	for _,header in pairs(cfg.extra_headers) do
 		table.insert(post_headers, header)
 	end
 
@@ -24,6 +22,8 @@ local Channel = function(http, url, cfg)
 	local recv_loop
 
 	recv_loop = function()
+		assert(run)
+
 		-- long-poll GET
 		http.fetch({
 			url = url,
@@ -53,6 +53,7 @@ local Channel = function(http, url, cfg)
 
 
 	local send = function(data)
+		assert(run)
 		-- POST
 
 		if debug then

@@ -1,82 +1,101 @@
-
-local webmail = {}
+-- false per default
+local has_xban2_mod = minetest.get_modpath("xban2")
 
 local MP = minetest.get_modpath(minetest.get_current_modname())
 local Channel = dofile(MP .. "/util/channel.lua")
 local channel
 
 -- auth request from webmail
-local auth_handler = function(auth)
+local function auth_handler(auth)
 	local handler = minetest.get_auth_handler()
 	minetest.log("action", "[webmail] auth: " .. auth.name)
 
 	local success = false
-	local entry = handler.get_auth(auth.name)
-	if entry and minetest.check_password_entry(auth.name, entry.password, auth.password) then
-		success = true
+	local banned = false
+	local message = ""
+
+	if mail.webmail.disallow_banned_players and has_xban2_mod then
+		-- check xban db
+		local xbanentry = xban.find_entry(auth.name)
+		if xbanentry and xbanentry.banned then
+			banned = true
+			message = "Banned!"
+		end
+	end
+
+	if not banned then
+		local entry = handler.get_auth(auth.name)
+		if entry and minetest.check_password_entry(auth.name, entry.password, auth.password) then
+			success = true
+		end
 	end
 
 	channel.send({
 		type = "auth",
 		data = {
 			name = auth.name,
-			success = success
+			success = success,
+			message = message
 		}
 	})
 end
 
 -- send request from webmail
-local send_handler = function(sendmail)
+local function send_handler(sendmail)
 	-- send mail from webclient
 	minetest.log("action", "[webmail] sending mail from webclient: " .. sendmail.src .. " -> " .. sendmail.dst)
-	mail.send(sendmail.src, sendmail.dst, sendmail.subject, sendmail.body)
+	mail.send(sendmail)
 end
 
 -- get player messages request from webmail
-local get_player_messages_handler = function(playername)
+local function get_player_messages_handler(playername)
+	local messages = mail.getMessages(playername)
 	channel.send({
 		type = "player-messages",
 		playername = playername,
-		data = mail.messages[playername]
+		data = messages
 	})
 end
 
 -- remove mail
-local delete_mail_handler = function(playername, index)
-	if mail.messages[playername] and mail.messages[playername][index] then
-		table.remove(mail.messages[playername], index)
+local function delete_mail_handler(playername, index)
+	local messages = mail.getMessages(playername)
+	if messages[index] then
+		table.remove(messages, index)
 	end
+	mail.setMessages(playername, messages)
 end
 
 -- mark mail as read
-local mark_mail_read_handler = function(playername, index)
-	if mail.messages[playername] and mail.messages[playername][index] then
-		mail.messages[playername][index].unread = false
+local function mark_mail_read_handler(playername, index)
+	local messages = mail.getMessages(playername)
+	if messages[index] then
+		messages[index].unread = false
 	end
+	mail.setMessages(playername, messages)
 end
 
 -- mark mail as unread
-local mark_mail_unread_handler = function(playername, index)
-	if mail.messages[playername] and mail.messages[playername][index] then
-		mail.messages[playername][index].unread = true
+local function mark_mail_unread_handler(playername, index)
+	local messages = mail.getMessages(playername)
+	if messages[index] then
+		messages[index].unread = true
 	end
+	mail.setMessages(playername, messages)
 end
 
--- invoked from inbox.lua:send()
-mail.webmail_send_hook = function(src,dst,subject,body)
+function mail.webmail_send_hook(m)
 	channel.send({
 		type = "new-message",
-		data = {
-			src=src,
-			dst=dst,
-			subject=subject,
-			body=body
-		}
+		data = m
 	})
 end
+mail.register_on_receive(mail.webmail_send_hook)
 
-mail.webmail_init = function(http, url)
-	channel = Channel(http, url)
+function mail.webmail_init(http, url, key)
+	channel = Channel(http, url .. "/api/minetest/channel", {
+		extra_headers = { "webmailkey: " .. key }
+	})
 
 	channel.receive(function(data)
 		if data.type == "auth" then
@@ -100,4 +119,3 @@ mail.webmail_init = function(http, url)
 		end
 	end)
 end
-
