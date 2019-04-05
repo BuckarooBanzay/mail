@@ -7,39 +7,14 @@ import (
 	"sync"
 )
 
-type Config struct {
-	ConfigVersion int    `json:"configversion"`
-	Port          int    `json:"port"`
-	SecretKey     string `json:"secretkey"`
-}
-
 var lock sync.Mutex
 
 const ConfigFile = "webmail.json"
 
-func (cfg *Config) Save() error {
-	return WriteConfig(ConfigFile, cfg)
-}
-
-func WriteConfig(filename string, cfg *Config) error {
-	lock.Lock()
-	defer lock.Unlock()
-
-	f, err := os.Create(filename)
-	if err != nil {
-		return err
-	}
-
-	defer f.Close()
-
-	str, err := json.MarshalIndent(cfg, "", "	")
-	if err != nil {
-		return err
-	}
-
-	f.Write(str)
-
-	return nil
+type Config struct {
+	ConfigVersion int    `json:"configversion"`
+	Port          int    `json:"port"`
+	SecretKey     string `json:"secretkey"`
 }
 
 func ParseConfig(filename string) (*Config, error) {
@@ -64,4 +39,29 @@ func ParseConfig(filename string) (*Config, error) {
 	}
 
 	return &cfg, nil
+}
+
+func (cfg *Config) Save() error {
+	return WriteConfig(ConfigFile, cfg)
+}
+
+func WriteConfig(filename string, cfg *Config) error {
+	lock.Lock()
+	defer lock.Unlock()
+
+	f, err := os.Create(filename)
+	if err != nil {
+		return err
+	}
+
+	defer f.Close()
+
+	str, err := json.MarshalIndent(cfg, "", "	")
+	if err != nil {
+		return err
+	}
+
+	f.Write(str)
+
+	return nil
 }
