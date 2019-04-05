@@ -5,23 +5,25 @@ import (
 	"flag"
 	"strconv"
 	"net/http"
-	"sync"
-	PrivateHandlers "webmail/handlers/private"
+	"webmail/vfs"
+	"webmail/bundle"
 )
 
-func logger(h http.Handler, prefix string) http.Handler {
+//go:generate sh -c "go run github.com/mjibson/esc -o vfs/static.go -prefix='static/' -pkg vfs static"
+
+
+func logger(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		log.Printf("[%s] %s %s %s", prefix, r.RemoteAddr, r.Method, r.URL)
+		log.Printf("[Request] %s %s %s", r.RemoteAddr, r.Method, r.URL)
 		h.ServeHTTP(w, r)
 	})
 }
 
 func main() {
-	var publicport, privateport int
+	var port int
 	var help bool
 
-	flag.IntVar(&publicport, "publicport", 8080, "Public port to listen on")
-	flag.IntVar(&privateport, "privateport", 8081, "Private port to listen on")
+	flag.IntVar(&port, "port", 8080, "port to listen on")
 	flag.BoolVar(&help, "help", false, "Show help and usage")
 	flag.Parse()
 
@@ -29,26 +31,14 @@ func main() {
 		flag.PrintDefaults()
 		return
 	}
-	
-	log.Print("Listening on ports: public=", publicport, " private=", privateport)
 
-	var wg sync.WaitGroup
-	wg.Add(2)
+	log.Print("Listening on port: ", port)
 
-	go func(){
-		defer wg.Done()
-		private_mux := http.NewServeMux()
-		PrivateHandlers.Init(private_mux)
-		log.Fatal(http.ListenAndServe(":" + strconv.Itoa(privateport), logger(private_mux, "private")))
-	}()
+	mux := http.NewServeMux()
+	mux.Handle("/", http.FileServer(vfs.FS(false)))
+	mux.Handle("/js/bundle.js", bundle.NewJsHandler(false))
+	mux.Handle("/css/bundle.css", bundle.NewCSSHandler(false))
 
-	go func(){
-		defer wg.Done()
-		public_mux := http.NewServeMux()
-		public_mux.Handle("/", http.FileServer(FS(false)))
-		log.Fatal(http.ListenAndServe(":" + strconv.Itoa(publicport), logger(public_mux, "public")))
-	}()
+	log.Fatal(http.ListenAndServe(":" + strconv.Itoa(port), logger(mux)))
 
-	wg.Wait()
 }
-

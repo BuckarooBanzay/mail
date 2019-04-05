@@ -1,0 +1,20 @@
+{
+  "scripts": [
+    "/js/lib/mithril.min.js",
+    "/js/lib/moment.js",
+    "/js/state.js",
+    "/js/api.js",
+    "/js/service.js",
+    "/js/nav.js",
+    "/js/login.js",
+    "/js/messages.js",
+    "/js/message_detail.js",
+    "/js/compose.js",
+    "/js/main.js"
+  ],
+  "styles": [
+    "/css/bootstrap.min.css",
+    "/css/fontawesome.min.css",
+    "/css/custom.css"
+  ]
+}
