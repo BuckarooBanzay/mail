@@ -4,20 +4,27 @@ import (
 	"webmail/eventbus"
 
 	"encoding/json"
+
 	"github.com/sirupsen/logrus"
 )
 
-type Payload struct {
-	Type string          `json:"type"`
-	Id   int64           `json:"id"`
-	Data json.RawMessage `json:"data"`
+type Request struct {
+	Method string          `json:"method"`
+	Id     int64           `json:"id"`
+	Params json.RawMessage `json:"params"`
+}
+
+type Response struct {
+	Method string          `json:"method"`
+	Id     *int64          `json:"id"`
+	Result json.RawMessage `json:"result"`
 }
 
 func HandleEvents(events *eventbus.Eventbus, output chan []byte) {
 	data := <-output
 
-	payload := Payload{}
-	err := json.Unmarshal(data, &payload)
+	response := Response{}
+	err := json.Unmarshal(data, &response)
 	if err != nil {
 		fields := logrus.Fields{
 			"error": err,
@@ -30,20 +37,23 @@ func HandleEvents(events *eventbus.Eventbus, output chan []byte) {
 	var obj interface{}
 	var eventType string
 
-	switch payload.Type {
+	switch response.Method {
 	case "new-message":
 		obj = Message{}
 		eventType = "new-message"
 
 	case "player-messages":
 	case "auth":
+		obj = AuthResponse{}
+		eventType = "auth-response"
+
 	}
 
-	err = json.Unmarshal(payload.Data, &obj)
+	err = json.Unmarshal(response.Result, &obj)
 	if err != nil {
 		fields := logrus.Fields{
 			"error":     err,
-			"data":      payload.Data,
+			"result":    response.Result,
 			"eventType": eventType,
 		}
 		logrus.WithFields(fields).Error("unmarshal")
