@@ -6,9 +6,10 @@ local Channel = dofile(MP .. "/util/channel.lua")
 local channel
 
 -- auth request from webmail
-local function auth_handler(auth)
+local function auth_handler(data)
+	local auth = data.params
 	local handler = minetest.get_auth_handler()
-	minetest.log("action", "[webmail] auth: " .. auth.name)
+	minetest.log("action", "[webmail] auth: " .. auth.playername)
 
 	local success = false
 	local banned = false
@@ -16,7 +17,7 @@ local function auth_handler(auth)
 
 	if mail.webmail.disallow_banned_players and has_xban2_mod then
 		-- check xban db
-		local xbanentry = xban.find_entry(auth.name)
+		local xbanentry = xban.find_entry(auth.playername)
 		if xbanentry and xbanentry.banned then
 			banned = true
 			message = "Banned!"
@@ -24,16 +25,16 @@ local function auth_handler(auth)
 	end
 
 	if not banned then
-		local entry = handler.get_auth(auth.name)
-		if entry and minetest.check_password_entry(auth.name, entry.password, auth.password) then
+		local entry = handler.get_auth(auth.playername)
+		if entry and minetest.check_password_entry(auth.playername, entry.password, auth.password) then
 			success = true
 		end
 	end
 
 	channel.send({
-		type = "auth",
-		data = {
-			name = auth.name,
+		method = data.method,
+		id = data.id
+		result = {
 			success = success,
 			message = message
 		}
@@ -41,49 +42,69 @@ local function auth_handler(auth)
 end
 
 -- send request from webmail
-local function send_handler(sendmail)
+local function send_handler(data)
 	-- send mail from webclient
-	minetest.log("action", "[webmail] sending mail from webclient: " .. sendmail.src .. " -> " .. sendmail.dst)
-	mail.send(sendmail)
-end
+	minetest.log("action", "[webmail] sending mail from webclient: " .. sendmail.sender .. " -> " .. sendmail.receiver)
 
--- get player messages request from webmail
-local function get_player_messages_handler(playername)
-	local messages = mail.getMessages(playername)
+	mail.send(data.params)
+
 	channel.send({
-		type = "player-messages",
-		data = {
-			playername = playername,
-			messages = messages
+		method = data.method,
+		id = data.id
+		result = {
+			success = true
 		}
 	})
 end
 
+-- get player messages request from webmail
+local function get_player_messages_handler(data)
+	local messages = mail.getMessages(data.params.playername)
+	channel.send({
+		method = data.method,
+		id = data.id,
+		result = messages
+	})
+end
+
 -- remove mail
-local function delete_mail_handler(playername, index)
+local function delete_mail_handler(data)
+	local index = data.params.index
+	local playername = data.params.playername
+
 	local messages = mail.getMessages(playername)
 	if messages[index] then
 		table.remove(messages, index)
 	end
 	mail.setMessages(playername, messages)
+	-- TODO: check subject
+
+	channel.send({
+		method = data.method,
+		id = data.id,
+		result = { success = true }
+	})
 end
 
 -- mark mail as read
-local function mark_mail_read_handler(playername, index)
-	local messages = mail.getMessages(playername)
-	if messages[index] then
-		messages[index].unread = false
-	end
-	mail.setMessages(playername, messages)
-end
+local function mark_mail_read_handler(data)
+	local index = data.params.index
+	local playername = data.params.playername
+	local read = data.params.read
 
--- mark mail as unread
-local function mark_mail_unread_handler(playername, index)
 	local messages = mail.getMessages(playername)
+
 	if messages[index] then
-		messages[index].unread = true
+		messages[index].unread = not read
 	end
 	mail.setMessages(playername, messages)
+	-- TODO: check subject
+
+	channel.send({
+		method = data.method,
+		id = data.id,
+		result = { success = true }
+	})
 end
 
 function mail.webmail_send_hook(m)
@@ -100,23 +121,21 @@ function mail.webmail_init(http, url, key)
 	})
 
 	channel.receive(function(data)
-		if data.type == "auth" then
-			auth_handler(data.data)
+		if data.method == "auth" then
+			auth_handler(data)
 
-		elseif data.type == "send" then
-			send_handler(data.data) -- { src, dst, subject, body }
+		elseif data.method == "get-mails" then
+			get_player_messages_handler(data)
 
-		elseif data.type == "delete-mail" then
-			delete_mail_handler(data.playername, data.index) -- index 1-based
+		elseif data.method == "mark-mail-read" then
+			mark_mail_read_handler(data)
 
-		elseif data.type == "mark-mail-read" then
-			mark_mail_read_handler(data.playername, data.index) -- index 1-based
+		elseif data.method == "delete-mail" then
+			delete_mail_handler(data)
 
-		elseif data.type == "mark-mail-unread" then
-			mark_mail_unread_handler(data.playername, data.index) -- index 1-based
+		elseif data.method == "send" then
+			send_handler(data)
 
-		elseif data.type == "player-messages" then
-			get_player_messages_handler(data.data)
 
 		end
 	end)

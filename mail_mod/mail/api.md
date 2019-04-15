@@ -4,8 +4,8 @@ The mail format in the api hooks
 
 ```lua
 mail = {
-	src = "source name",
-	dst = "destination name",
+	sender = "source name",
+	receiver = "destination name",
 	subject = "subject line",
 	body = "mail body",
 	-- 8 attachments max
@@ -22,8 +22,8 @@ mail.send("source name", "destination name", "subject line", "mail body")
 New variant (1.1+)
 ```lua
 mail.send({
-	src = "source name",
-	dst = "destination name",
+	sender = "source name",
+	receiver = "destination name",
 	subject = "subject line",
 	body = "mail body"
 })
@@ -47,6 +47,7 @@ The mail format on-disk
 [{
 	"unread": true,
 	"sender": "sender name",
+	"receiver": "receiver name",
 	"subject": "subject name",
 	"body": "main\nmultiline\nbody",
 	"time": 1551258349,
