@@ -33,24 +33,24 @@ type RPC struct {
 	results map[int]chan *Response
 }
 
-func (this *RPC) Request(method string, params interface{}) (*json.RawMessage, error) {
+func (this *RPC) Request(method string, params interface{}, result interface{}) error {
 	req := Request{
 		Id:     rand.Intn(64000),
 		Method: method,
 		Params: params,
 	}
 
-	json, err := json.Marshal(req)
+	jsonData, err := json.Marshal(req)
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	resChannel := make(chan *Response)
 	this.results[req.Id] = resChannel
 	var res *Response
 
-	this.out <- []byte(json)
+	this.out <- []byte(jsonData)
 
 	select {
 	case res = <-resChannel:
@@ -61,10 +61,12 @@ func (this *RPC) Request(method string, params interface{}) (*json.RawMessage, e
 	delete(this.results, req.Id)
 
 	if res == nil {
-		return nil, errors.New("timeout")
+		return errors.New("timeout")
 	}
 
-	return &res.Result, nil
+	err = json.Unmarshal(res.Result, result)
+
+	return err
 }
 
 func (this *RPC) Loop() {

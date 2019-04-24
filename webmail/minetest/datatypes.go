@@ -9,6 +9,8 @@ type Message struct {
 	Attachments []string `json:"attachments"`
 }
 
+const AuthRequestMethod = "auth"
+
 type AuthRequest struct {
 	Playername string `json:"playername"`
 	Password   string `json:"password"`

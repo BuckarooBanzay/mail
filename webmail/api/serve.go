@@ -8,7 +8,6 @@ import (
 	"webmail/api/util"
 	"webmail/app"
 	"webmail/bundle"
-	"webmail/minetest"
 	"webmail/vfs"
 
 	"github.com/sirupsen/logrus"
@@ -31,20 +30,10 @@ func Serve(ctx *app.App) {
 	mux.Handle("/api/config", &ConfigHandler{ctx: ctx})
 	mux.Handle("/api/login", &LoginHandler{ctx: ctx})
 
-	in := make(chan []byte)
-	out := make(chan []byte)
-
 	channel := util.Channel{
-		Input:  in,
-		Output: out,
+		Input:  ctx.ToMTChannel,
+		Output: ctx.FromMTChannel,
 	}
-
-	go func() {
-		for true {
-			// events from mt to the webmail app
-			minetest.HandleEvents(ctx.Events, out)
-		}
-	}()
 
 	mux.Handle("/api/channel", security.SecureKey(ctx.Config.SecretKey, &channel))
 

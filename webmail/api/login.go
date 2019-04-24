@@ -6,6 +6,7 @@ import (
 
 	"webmail/api/security"
 	"webmail/app"
+	"webmail/minetest"
 
 	"github.com/gbrlsnchs/jwt/v3"
 	"github.com/sirupsen/logrus"
@@ -36,11 +37,26 @@ func (this *LoginHandler) ServeHTTP(resp http.ResponseWriter, req *http.Request)
 	}
 	logrus.WithFields(fields).Info("Login")
 
-	//TODO: send login rpc to output channel
+	authReq := minetest.AuthRequest{
+		Playername: data.Username,
+		Password:   data.Password,
+	}
 
-	//TODO: await rpc packet with same id or abort after a second
+	authRes := minetest.AuthResponse{}
 
-	//TODO: check success
+	err = this.ctx.MTRpc.Request(minetest.AuthRequestMethod, authReq, &authRes)
+
+	if err != nil {
+		resp.WriteHeader(500)
+		resp.Write([]byte(err.Error()))
+		return
+	}
+
+	if !authRes.Success {
+		resp.WriteHeader(401)
+		resp.Write([]byte("Invalid credentials"))
+		return
+	}
 
 	hs256 := jwt.NewHMAC(jwt.SHA256, []byte(this.ctx.Config.SecretKey))
 	h := jwt.Header{}

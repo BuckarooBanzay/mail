@@ -30,6 +30,7 @@ func TestRequest(t *testing.T) {
 		resp := Response{
 			Id:     &req.Id,
 			Method: req.Method,
+			Result: json.RawMessage(`666`),
 		}
 
 		data, err = json.Marshal(resp)
@@ -38,14 +39,16 @@ func TestRequest(t *testing.T) {
 
 	}()
 
-	result, err := rpc.Request("test", 123)
+	var result int
+
+	err := rpc.Request("test", 123, &result)
 
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	if result == nil {
-		t.Fatal(err)
+	if result != 666 {
+		t.Fatal(result)
 	}
 
 	close(in)
@@ -64,7 +67,9 @@ func TestRequestTimeout(t *testing.T) {
 		<-out
 	}()
 
-	_, err := rpc.Request("test", 123)
+	var result int
+
+	err := rpc.Request("test", 123, &result)
 
 	if err == nil {
 		t.Fatal("no error")
