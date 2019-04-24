@@ -41,6 +41,7 @@ func Serve(ctx *app.App) {
 
 	go func() {
 		for true {
+			// events from mt to the webmail app
 			minetest.HandleEvents(ctx.Events, out)
 		}
 	}()

@@ -20,6 +20,7 @@ type Response struct {
 	Result json.RawMessage `json:"result"`
 }
 
+// events from mt to the webmail app
 func HandleEvents(events *eventbus.Eventbus, output chan []byte) {
 	data := <-output
 

@@ -8,6 +8,7 @@ import (
 	"webmail/app"
 
 	"github.com/gbrlsnchs/jwt/v3"
+	"github.com/sirupsen/logrus"
 )
 
 type UsernamePassword struct {
@@ -30,7 +31,16 @@ func (this *LoginHandler) ServeHTTP(resp http.ResponseWriter, req *http.Request)
 		return
 	}
 
-	//TODO: check username/password
+	fields := logrus.Fields{
+		"username": data.Username,
+	}
+	logrus.WithFields(fields).Info("Login")
+
+	//TODO: send login rpc to output channel
+
+	//TODO: await rpc packet with same id or abort after a second
+
+	//TODO: check success
 
 	hs256 := jwt.NewHMAC(jwt.SHA256, []byte(this.ctx.Config.SecretKey))
 	h := jwt.Header{}

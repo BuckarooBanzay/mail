@@ -40,3 +40,18 @@ func (this *Eventbus) AddListener(l Listener) {
 
 	this.listeners = append(this.listeners, l)
 }
+
+func (this *Eventbus) RemoveListener(l Listener) {
+	this.mutex.Lock()
+	defer this.mutex.Unlock()
+
+	newlist := make([]Listener, 0)
+
+	for _, item := range this.listeners {
+		if l != item {
+			newlist = append(newlist, item)
+		}
+	}
+
+	this.listeners = newlist
+}
