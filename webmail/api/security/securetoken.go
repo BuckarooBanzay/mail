@@ -28,6 +28,12 @@ func (this *SecureTokenHandler) ServeHTTP(resp http.ResponseWriter, req *http.Re
 
 	token := req.Header.Get("Authorization")
 
+	if token == "" {
+		resp.WriteHeader(403)
+		resp.Write([]byte("Unauthorized"))
+		return
+	}
+
 	raw, err := jwt.Parse([]byte(token))
 	if err != nil {
 		resp.WriteHeader(500)
