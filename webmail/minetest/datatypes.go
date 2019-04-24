@@ -21,6 +21,8 @@ type AuthResponse struct {
 	Message string `json:"message"`
 }
 
+const GetPlayerMailMethod = "get-mails"
+
 type GetPlayerMailsRequest struct {
 	Playername string `json:"playername"`
 }
