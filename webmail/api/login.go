@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"webmail/api/security"
 	"webmail/app"
 	"webmail/minetest"
 
@@ -60,7 +59,7 @@ func (this *LoginHandler) ServeHTTP(resp http.ResponseWriter, req *http.Request)
 
 	hs256 := jwt.NewHMAC(jwt.SHA256, []byte(this.ctx.Config.SecretKey))
 	h := jwt.Header{}
-	jot := &security.Token{
+	jot := &app.Token{
 		Username: data.Username,
 	}
 

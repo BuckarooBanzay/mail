@@ -1,4 +1,4 @@
-package security
+package app
 
 import (
 	"github.com/gbrlsnchs/jwt/v3"
