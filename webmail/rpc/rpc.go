@@ -4,19 +4,27 @@ import (
 	"encoding/json"
 	"errors"
 	"math/rand"
+	"sync"
 	"time"
 )
 
 func New(in chan []byte, out chan []byte) *RPC {
 	return &RPC{
-		in:      in,
-		out:     out,
-		results: make(map[int]chan *Response),
+		in:        in,
+		out:       out,
+		results:   make(map[int]chan *Response),
+		listeners: make([]NotificationListener, 0),
+		mutex:     &sync.RWMutex{},
 	}
 }
 
 type Request struct {
 	Id     int         `json:"id"`
+	Method string      `json:"method"`
+	Params interface{} `json:"params"`
+}
+
+type Notification struct {
 	Method string      `json:"method"`
 	Params interface{} `json:"params"`
 }
@@ -27,10 +35,16 @@ type Response struct {
 	Result json.RawMessage `json:"result"`
 }
 
+type NotificationListener interface {
+	OnNotification(notification *Notification)
+}
+
 type RPC struct {
-	in      chan []byte
-	out     chan []byte
-	results map[int]chan *Response
+	in        chan []byte
+	out       chan []byte
+	results   map[int]chan *Response
+	listeners []NotificationListener
+	mutex     *sync.RWMutex
 }
 
 func (this *RPC) Request(method string, params interface{}, result interface{}) error {
@@ -69,6 +83,13 @@ func (this *RPC) Request(method string, params interface{}, result interface{}) 
 	return err
 }
 
+func (this *RPC) AddNotificationListener(listener NotificationListener) {
+	this.mutex.Lock()
+	defer this.mutex.Unlock()
+
+	this.listeners = append(this.listeners, listener)
+}
+
 func (this *RPC) Loop() {
 	for data := range this.in {
 		res := &Response{}
@@ -80,7 +101,22 @@ func (this *RPC) Loop() {
 		}
 
 		if res.Id == nil {
-			//TODO
+			//Notification
+			n := &Notification{}
+			err = json.Unmarshal(data, n)
+
+			if err != nil {
+				//TODO
+				continue
+			}
+
+			this.mutex.RLock()
+			defer this.mutex.RUnlock()
+
+			for _, l := range this.listeners {
+				l.OnNotification(n)
+			}
+
 			continue
 		}
 

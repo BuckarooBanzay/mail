@@ -79,3 +79,51 @@ func TestRequestTimeout(t *testing.T) {
 	close(out)
 
 }
+
+type MyListener struct {
+	notification *Notification
+}
+
+func (this *MyListener) OnNotification(notification *Notification) {
+	this.notification = notification
+}
+
+func TestNotification(t *testing.T) {
+
+	in := make(chan []byte)
+	out := make(chan []byte)
+	rpc := New(in, out)
+
+	go rpc.Loop()
+
+	l := &MyListener{}
+	rpc.AddNotificationListener(l)
+
+	n := Notification{
+		Method: "test",
+		Params: 123,
+	}
+
+	data, _ := json.Marshal(n)
+	in <- data
+
+	time.Sleep(50 * time.Millisecond)
+
+	if l.notification == nil {
+		t.Fatal("no notification")
+	}
+
+	if l.notification.Method != "test" {
+		t.Fatal("wrong method")
+	}
+
+	params := l.notification.Params.(float64)
+
+	if params < 122.9 || params > 123.1 {
+		t.Fatal("wrong params", params)
+	}
+
+	close(in)
+	close(out)
+
+}
