@@ -1,5 +1,7 @@
 package minetest
 
+const SendMessageMethod = "send-mail"
+
 type Message struct {
 	Sender      string   `json:"sender"`
 	Receiver    string   `json:"receiver"`

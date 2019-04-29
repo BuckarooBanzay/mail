@@ -15,14 +15,10 @@ func (this *MailHandler) ServeHTTP(resp http.ResponseWriter, req *http.Request, 
 	if req.Method == "POST" {
 		//POST
 		this.doPost(resp, req, token)
-
 	} else {
 		//GET
 		this.doGet(resp, req, token)
-
 	}
-
-	json.NewEncoder(resp).Encode("ok")
 }
 
 func (this *MailHandler) doGet(resp http.ResponseWriter, req *http.Request, token *app.Token) {
@@ -45,5 +41,31 @@ func (this *MailHandler) doGet(resp http.ResponseWriter, req *http.Request, toke
 }
 
 func (this *MailHandler) doPost(resp http.ResponseWriter, req *http.Request, token *app.Token) {
+	decoder := json.NewDecoder(req.Body)
+	msg := minetest.Message{}
 
+	err := decoder.Decode(&msg)
+	if err != nil {
+		resp.WriteHeader(500)
+		resp.Write([]byte(err.Error()))
+		return
+	}
+
+	if token.Username != msg.Sender {
+		resp.WriteHeader(401)
+		resp.Write([]byte("can't send as different user!"))
+		return
+	}
+
+	sendResp := minetest.GenericResultResponse{}
+
+	err = this.ctx.MTRpc.Request(minetest.SendMessageMethod, msg, &sendResp)
+
+	if err != nil {
+		resp.WriteHeader(500)
+		resp.Write([]byte(err.Error()))
+		return
+	}
+
+	json.NewEncoder(resp).Encode(sendResp)
 }
