@@ -15,5 +15,11 @@ func Setup(cfg *Config) *App {
 
 	a.MTRpc = rpc.New(a.FromMTChannel, a.ToMTChannel)
 
+	go func() {
+		for true {
+			a.MTRpc.Loop()
+		}
+	}()
+
 	return &a
 }
