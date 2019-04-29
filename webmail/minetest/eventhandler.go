@@ -1,64 +1,44 @@
 package minetest
 
 import (
-	"webmail/eventbus"
-
 	"encoding/json"
+	"webmail/eventbus"
+	"webmail/rpc"
 
 	"github.com/sirupsen/logrus"
 )
 
-type Request struct {
-	Method string          `json:"method"`
-	Id     int64           `json:"id"`
-	Params json.RawMessage `json:"params"`
-}
-
-type Response struct {
-	Method string          `json:"method"`
-	Id     *int64          `json:"id"`
-	Result json.RawMessage `json:"result"`
+type EventListener struct {
+	Events *eventbus.Eventbus
 }
 
 // events from mt to the webmail app
-func HandleEvents(events *eventbus.Eventbus, output chan []byte) {
-	data := <-output
-
-	response := Response{}
-	err := json.Unmarshal(data, &response)
-	if err != nil {
-		fields := logrus.Fields{
-			"error": err,
-			"data":  data,
-		}
-		logrus.WithFields(fields).Error("event unmarshal")
-		return
-	}
+func (this *EventListener) OnNotification(notification *rpc.Notification) {
 
 	var obj interface{}
 	var eventType string
 
-	switch response.Method {
+	switch notification.Method {
 	case "new-message":
 		obj = Message{}
 		eventType = "new-message"
-
-	case "player-messages":
-	case "auth":
-		obj = AuthResponse{}
-		eventType = "auth-response"
-
 	}
 
-	err = json.Unmarshal(response.Result, &obj)
+	if eventType == "" {
+		return
+	}
+
+	err := json.Unmarshal(notification.Params, &obj)
 	if err != nil {
 		fields := logrus.Fields{
 			"error":     err,
-			"result":    response.Result,
+			"method":    notification.Method,
+			"params":    notification.Params,
 			"eventType": eventType,
 		}
 		logrus.WithFields(fields).Error("unmarshal")
 		return
 	}
 
+	this.Events.Emit(eventType, obj)
 }

@@ -25,8 +25,8 @@ type Request struct {
 }
 
 type Notification struct {
-	Method string      `json:"method"`
-	Params interface{} `json:"params"`
+	Method string          `json:"method"`
+	Params json.RawMessage `json:"params"`
 }
 
 type Response struct {
