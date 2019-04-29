@@ -51,11 +51,8 @@ func (this *MailHandler) doPost(resp http.ResponseWriter, req *http.Request, tok
 		return
 	}
 
-	if token.Username != msg.Sender {
-		resp.WriteHeader(401)
-		resp.Write([]byte("can't send as different user!"))
-		return
-	}
+	//use logged in user as sender
+	msg.Sender = token.Username
 
 	sendResp := minetest.GenericResultResponse{}
 

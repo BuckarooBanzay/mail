@@ -29,6 +29,7 @@ func Serve(ctx *app.App) {
 
 	mux.Handle("/api/config", &ConfigHandler{ctx: ctx})
 	mux.Handle("/api/login", &LoginHandler{ctx: ctx})
+	mux.Handle("/api/verify", security.SecureToken(ctx.Config.SecretKey, &VerifyHandler{ctx: ctx}))
 	mux.Handle("/api/mail", security.SecureToken(ctx.Config.SecretKey, &MailHandler{ctx: ctx}))
 
 	channel := util.Channel{

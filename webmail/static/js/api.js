@@ -4,7 +4,7 @@ var api = {};
 
 api.fetchMails = function(){
 	return m.request({
-		url: "api/inbox",
+		url: "api/mail",
 		headers: { "authorization": webmail.token }
 	});
 }
@@ -12,7 +12,7 @@ api.fetchMails = function(){
 api.deleteMail = function(index){
 	return m.request({
 		method: "DELETE",
-		url: "api/inbox/" + index,
+		url: "api/inbox/" + index, //TODO
 		headers: { "authorization": webmail.token }
 	});
 }
@@ -20,20 +20,20 @@ api.deleteMail = function(index){
 api.markRead = function(index){
 	return m.request({
 		method: "POST",
-		url: "api/markread",
+		url: "api/markread", //TODO
 		data: { index: index },
 		headers: { "authorization": webmail.token }
 	});
 }
 
-api.sendMail = function(recipient, subject, text){
+api.sendMail = function(receiver, subject, body){
 	return m.request({
 		method: "POST",
 		url: "api/send",
 		data: {
-			recipient: recipient,
+			receiver: receiver,
 			subject: subject,
-			text: text
+			body: body
 		},
 		headers: { "authorization": webmail.token }
 	});
