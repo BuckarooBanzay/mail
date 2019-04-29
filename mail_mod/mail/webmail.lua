@@ -26,7 +26,7 @@ local function auth_handler(data)
 
 	if not banned then
 		-- check tan
-		local tan = auth_proxy.tan[auth.name]
+		local tan = mail.tan[auth.name]
 		if tan ~= nil then
 			success = tan == auth.password
 		end
@@ -42,7 +42,7 @@ local function auth_handler(data)
 
 	channel.send({
 		method = data.method,
-		id = data.id
+		id = data.id,
 		result = {
 			success = success,
 			message = message
@@ -53,13 +53,18 @@ end
 -- send request from webmail
 local function send_handler(data)
 	-- send mail from webclient
-	minetest.log("action", "[webmail] sending mail from webclient: " .. sendmail.sender .. " -> " .. sendmail.receiver)
+	if not data.params then
+		return
+	end
+
+	minetest.log("action", "[webmail] sending mail from webclient: " .. data.params.sender ..
+		" -> " .. data.params.receiver)
 
 	mail.send(data.params)
 
 	channel.send({
 		method = data.method,
-		id = data.id
+		id = data.id,
 		result = {
 			success = true
 		}
