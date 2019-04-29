@@ -25,9 +25,18 @@ local function auth_handler(data)
 	end
 
 	if not banned then
-		local entry = handler.get_auth(auth.playername)
-		if entry and minetest.check_password_entry(auth.playername, entry.password, auth.password) then
-			success = true
+		-- check tan
+		local tan = auth_proxy.tan[auth.name]
+		if tan ~= nil then
+			success = tan == auth.password
+		end
+
+		-- check auth
+		if not success then
+			local entry = handler.get_auth(auth.name)
+			if entry and minetest.check_password_entry(auth.playername, entry.password, auth.password) then
+				success = true
+			end
 		end
 	end
 
