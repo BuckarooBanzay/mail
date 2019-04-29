@@ -26,14 +26,14 @@ local function auth_handler(data)
 
 	if not banned then
 		-- check tan
-		local tan = mail.tan[auth.name]
+		local tan = mail.tan[auth.playername]
 		if tan ~= nil then
 			success = tan == auth.password
 		end
 
 		-- check auth
 		if not success then
-			local entry = handler.get_auth(auth.name)
+			local entry = handler.get_auth(auth.playername)
 			if entry and minetest.check_password_entry(auth.playername, entry.password, auth.password) then
 				success = true
 			end
