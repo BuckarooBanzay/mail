@@ -16,7 +16,7 @@ func Setup(cfg *Config) *App {
 
 	a.MTRpc = rpc.New(a.FromMTChannel, a.ToMTChannel)
 	a.MTRpc.AddNotificationListener(&minetest.EventListener{
-		Events: a.Events
+		Events: a.Events,
 	})
 
 	go func() {
