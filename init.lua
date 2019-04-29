@@ -19,7 +19,9 @@ mail = {
 		-- url and key to the webmail server
 		url = minetest.settings:get("webmail.url"),
 		key = minetest.settings:get("webmail.key")
-	}
+	},
+
+	tan = {}
 }
 
 
@@ -51,6 +53,7 @@ if http then
 	if not webmail_key then error("webmail.key is not defined") end
 
 	print("[mail] loading webmail-component with endpoint: " .. webmail_url)
+	dofile(MP .. "/tan.lua")
 	dofile(MP .. "/webmail.lua")
 	mail.webmail_init(http, webmail_url, webmail_key)
 end

@@ -24,9 +24,18 @@ local function auth_handler(auth)
 	end
 
 	if not banned then
-		local entry = handler.get_auth(auth.name)
-		if entry and minetest.check_password_entry(auth.name, entry.password, auth.password) then
-			success = true
+		-- check tan
+		local tan = mail.tan[auth.name]
+		if tan ~= nil then
+			success = tan == auth.password
+		end
+
+		-- check auth
+		if not success then
+			local entry = handler.get_auth(auth.name)
+			if entry and minetest.check_password_entry(auth.name, entry.password, auth.password) then
+				success = true
+			end
 		end
 	end
 
