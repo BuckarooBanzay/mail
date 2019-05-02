@@ -1,8 +1,6 @@
 package api
 
 import (
-	"bytes"
-	"encoding/json"
 	"math/rand"
 	"net/http"
 	"sync"
@@ -14,15 +12,20 @@ import (
 
 type WS struct {
 	ctx      *app.App
-	channels map[int]chan []byte
+	channels map[int]chan Event
 	mutex    *sync.RWMutex
 	clients  int
+}
+
+type Event struct {
+	Type string
+	Data interface{}
 }
 
 func NewWS(ctx *app.App) *WS {
 	ws := WS{}
 	ws.mutex = &sync.RWMutex{}
-	ws.channels = make(map[int]chan []byte)
+	ws.channels = make(map[int]chan Event)
 
 	return &ws
 }
@@ -36,24 +39,18 @@ var upgrader = websocket.Upgrader{
 }
 
 func (t *WS) OnEvent(eventtype string, o interface{}) {
-	data, err := json.Marshal(o)
-	if err != nil {
-		panic(err)
-	}
-
-	buf := new(bytes.Buffer)
-	buf.Write([]byte("{\"type\":\""))
-	buf.Write([]byte(eventtype))
-	buf.Write([]byte("\",\"data\":"))
-	buf.Write(data)
-	buf.Write([]byte("}"))
 
 	t.mutex.RLock()
 	defer t.mutex.RUnlock()
 
+	e := Event{
+		Type: eventtype,
+		Data: o,
+	}
+
 	for _, c := range t.channels {
 		select {
-		case c <- buf.Bytes():
+		case c <- e:
 		default:
 		}
 	}
@@ -71,7 +68,7 @@ func (t *WS) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	}
 
 	id := rand.Intn(64000)
-	ch := make(chan []byte)
+	ch := make(chan Event)
 
 	t.mutex.Lock()
 	t.channels[id] = ch
@@ -79,9 +76,9 @@ func (t *WS) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
 	t.mutex.Unlock()
 
 	for {
-		data := <-ch
+		e := <-ch
 
-		err := conn.WriteMessage(websocket.TextMessage, data)
+		err := conn.WriteMessage(websocket.TextMessage, []byte(e.Type)) //TODO
 		if err != nil {
 			break
 		}
