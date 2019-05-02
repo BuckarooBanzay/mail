@@ -9,7 +9,7 @@ if (webmail.token){
 		if (result.username){
 			state.username = result.username;
 			state.loggedIn = true;
-			//fetch messages after token alright
+			//fetch messages after token is valid
 			service.fetchMails();
 		}
 	});
@@ -49,7 +49,7 @@ service.login = function(username, password){
 service.logout = function(){
 	state.loggedIn = false;
 	webmail.mails = [];
-	
+
 	//clear token
 	webmail.token = null;
 	delete localStorage["webmail-token"];
