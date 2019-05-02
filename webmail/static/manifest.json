@@ -5,11 +5,17 @@
     "/js/state.js",
     "/js/api.js",
     "/js/service.js",
-    "/js/nav.js",
-    "/js/login.js",
+    "/js/components/LoginButton.js",
+    "/js/components/LogoutButton.js",
+    "/js/components/LoginForm.js",
+    "/js/components/Compose.js",
+    "/js/components/InboxRow.js",
+    "/js/components/InboxTable.js",
+    "/js/components/NavLinks.js",
+    "/js/components/MEssageDetail.js",
     "/js/messages.js",
     "/js/message_detail.js",
-    "/js/compose.js",
+    "/js/routes.js"
     "/js/main.js"
   ],
   "styles": [
