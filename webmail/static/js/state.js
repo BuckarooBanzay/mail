@@ -1,24 +1,20 @@
-(function(){
+var webmail = {
+	routes: {},
+	token: localStorage["webmail-token"],
 
-	var webmail = {
-		routes: {},
-		token: localStorage["webmail-token"],
-		loginState: {
-			username: "",
-			password: "",
-			loggedIn: false,
-			errorMsg: "",
-			busy: false
-		},
-		compose: {
-			recipient: "",
-			subject: "",
-			body: ""
-		},
-		mails: null
-	};
+	loginState: {
+		username: "",
+		password: "",
+		loggedIn: false,
+		errorMsg: "",
+		busy: false
+	},
 
-	//publish
-	window.webmail = webmail;
+	compose: {
+		recipient: "",
+		subject: "",
+		body: ""
+	},
 
-})();
+	mails: null
+};

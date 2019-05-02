@@ -12,10 +12,11 @@
     "/js/components/InboxRow.js",
     "/js/components/InboxTable.js",
     "/js/components/NavLinks.js",
-    "/js/components/MEssageDetail.js",
-    "/js/messages.js",
-    "/js/message_detail.js",
-    "/js/routes.js"
+    "/js/components/MessageDetail.js",
+    "/js/components/NavBarContent.js",
+    "/js/components/NavLinks.js",
+    "/js/components/Nav.js",
+    "/js/routes.js",
     "/js/main.js"
   ],
   "styles": [
