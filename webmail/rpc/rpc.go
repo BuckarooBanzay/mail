@@ -6,6 +6,8 @@ import (
 	"math/rand"
 	"sync"
 	"time"
+
+	"github.com/sirupsen/logrus"
 )
 
 func New(in chan []byte, out chan []byte) *RPC {
@@ -96,7 +98,11 @@ func (this *RPC) Loop() {
 		err := json.Unmarshal(data, res)
 
 		if err != nil {
-			//TODO
+			fields := logrus.Fields{
+				"error": err,
+				"data":  data,
+			}
+			logrus.WithFields(fields).Error("unmarshal-error in rpc loop")
 			continue
 		}
 
@@ -106,7 +112,10 @@ func (this *RPC) Loop() {
 			err = json.Unmarshal(data, n)
 
 			if err != nil {
-				//TODO
+				fields := logrus.Fields{
+					"error": err,
+				}
+				logrus.WithFields(fields).Error("unmarshal-error in notification")
 				continue
 			}
 
@@ -123,7 +132,10 @@ func (this *RPC) Loop() {
 		resChannel := this.results[*res.Id]
 
 		if resChannel == nil {
-			//TODO
+			fields := logrus.Fields{
+				"res.id": *res.Id,
+			}
+			logrus.WithFields(fields).Error("no channel with given id found")
 			continue
 		}
 

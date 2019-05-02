@@ -101,7 +101,7 @@ func TestNotification(t *testing.T) {
 
 	n := Notification{
 		Method: "test",
-		Params: 123,
+		Params: json.RawMessage("123"),
 	}
 
 	data, _ := json.Marshal(n)
@@ -117,7 +117,12 @@ func TestNotification(t *testing.T) {
 		t.Fatal("wrong method")
 	}
 
-	params := l.notification.Params.(float64)
+	var params float64
+	err := json.Unmarshal(l.notification.Params, &params)
+
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	if params < 122.9 || params > 123.1 {
 		t.Fatal("wrong params", params)
