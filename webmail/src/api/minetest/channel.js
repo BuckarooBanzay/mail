@@ -4,7 +4,7 @@ const events = require("../../events");
 const keycheck = require("./keycheck");
 
 const bodyParser = require('body-parser')
-const jsonParser = bodyParser.json()
+const jsonParser = bodyParser.json({ limit: '10mb' })
 
 const debug = false;
 
@@ -58,4 +58,3 @@ app.post('/api/minetest/channel', jsonParser, function(req, res){
 
 	res.end();
 });
-
