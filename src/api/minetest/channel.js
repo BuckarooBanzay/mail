@@ -6,7 +6,7 @@ const keycheck = require("./keycheck");
 const bodyParser = require('body-parser')
 const jsonParser = bodyParser.json({ limit: '10mb' })
 
-const debug = false;
+const debug = process.env.WEBMAIL_DEBUG;
 
 var tx_queue = [];
 
