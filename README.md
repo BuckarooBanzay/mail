@@ -1,15 +1,9 @@
-Mail mod for Minetest
+Mail mod for Minetest (webmail component)
 ======
 
-[![Build Status](https://travis-ci.org/thomasrudin-mt/mail.svg?branch=master)](https://travis-ci.org/thomasrudin-mt/mail)
+This is the webmail component for the minetest mail mod
 
-This is a fork of cheapies mail mod
-
-It adds a mail-system that allows players to send each other messages in-game and via webmail (optional)
-
-# Docs
-
-* [Api](./api.md)
+The ingame mod lives here: https://github.com/thomasrudin-mt/mail_mod
 
 # Screenshots
 
@@ -21,12 +15,6 @@ Webmail
 
 
 # Installation
-
-## In-game mail mod
-
-Install it like any other mod: copy the directory to your "worldmods" folder
-
-## Webmail
 
 The webmail component runs as webservice and provides the api for the minetest server
 and the website for the webmail componentc
@@ -55,17 +43,9 @@ webmail.key = myserverkey
 webmail.disallow_banned_players = true
 ```
 
-# Commands/Howto
-
-To access your mail click on the inventory mail button or use the "/mail" command
-Mails can be deleted, marked as read or unread, replied to and forwarded to another player
-
-# Dependencies
-* None
-
 # Roadmap
 
-My current roadmap:
+The current roadmap:
 * Enhance ingame UI
 * Better ingame notification
 * Enhance webmail component
@@ -78,16 +58,3 @@ Let me know if there are any (there are for sure:)
 # License
 
 See the "LICENSE" file
-
-# Textures
-* textures/email_mail.png (https://github.com/rubenwardy/email.git WTFPL)
-
-# Contributors
-
-* Cheapie (initial idea/project)
-* Rubenwardy (lua/ui improvements)
-
-# Old/Historic stuff
-* Old forum topic: https://forum.minetest.net/viewtopic.php?t=14464
-* Old mod: https://cheapiesystems.com/git/mail/
-
