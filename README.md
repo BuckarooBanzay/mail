@@ -17,18 +17,26 @@ Webmail
 # Installation
 
 The webmail component runs as webservice and provides the api for the minetest server
-and the website for the webmail componentc
+and the website for the webmail component
+
+## Bare metal
 
 Prerequisites:
 * node and npm (on ubuntu: apt install nodejs npm)
 
 To install and run the webmail server:
-* Copy the "webmail" folder to your desired location (or keep it where it is)
-* Change to the webmail directory: (cd ./webmail)
 * run "npm install" to install the node dependencies
 * generate a secret key for yourself, can be anything string-like, i suggest one from https://www.random.org/passwords/?num=5&len=16&format=html&rnd=new
 * Edit the "start.sh" file and insert the secret key in place of "myserverkey"
 * run "./start.sh"
+
+## Docker
+
+```bash
+sudo docker run --rm -it -p 8080:8080 -e WEBMAILKEY=myserverkey minetestmail/mail
+```
+
+# Mod configuration
 
 To set up your minetest installation to communicate with the webmail server, edit your "minetest.conf":
 
@@ -46,11 +54,6 @@ webmail.key = myserverkey
 webmail.disallow_banned_players = true
 ```
 
-# Docker image
-
-```bash
-sudo docker run --rm -it -p 8080:8080 -e WEBMAILKEY=myserverkey minetestmail/mail
-```
 
 # Roadmap
 
