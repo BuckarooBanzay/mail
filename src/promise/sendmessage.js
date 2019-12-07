@@ -2,7 +2,7 @@
 
 const events = require("../events");
 
-module.exports = (playername, recipient, subject, text) => new Promise(function(resolve, reject){
+module.exports = (playername, recipient, subject, text) => new Promise(function(resolve){
 
 	events.emit("channel-send", {
 		type: "send",

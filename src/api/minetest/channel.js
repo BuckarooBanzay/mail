@@ -3,8 +3,8 @@ const app = require("../../app");
 const events = require("../../events");
 const keycheck = require("./keycheck");
 
-const bodyParser = require('body-parser')
-const jsonParser = bodyParser.json({ limit: '10mb' })
+const bodyParser = require('body-parser');
+const jsonParser = bodyParser.json({ limit: '10mb' });
 
 const debug = process.env.WEBMAIL_DEBUG;
 

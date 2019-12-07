@@ -3,7 +3,7 @@ const token = require("../token");
 
 module.exports = function(req, res){
 
-	var auth = req.headers["authorization"];
+	var auth = req.headers.authorization;
 	var payload = token.verify(auth);
 
 	if (auth && payload){
@@ -12,4 +12,4 @@ module.exports = function(req, res){
 
 	res.status(403).end();
 	return false;
-}
+};

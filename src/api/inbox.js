@@ -2,9 +2,6 @@
 const app = require("../app");
 const tokencheck = require("./tokencheck");
 
-const bodyParser = require('body-parser');
-const jsonParser = bodyParser.json();
-
 const playermessages = require("../promise/playermessages");
 const deletemessage = require("../promise/deletemessage");
 
@@ -21,7 +18,7 @@ app.get('/api/inbox', function(req, res){
 				})
 			);
 		})
-		.catch(e => res.status(500).end());
+		.catch(() => res.status(500).end());
 	}
 
 });
