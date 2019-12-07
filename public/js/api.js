@@ -7,7 +7,7 @@ api.fetchMails = function(){
 		url: "api/inbox",
 		headers: { "authorization": webmail.token }
 	});
-}
+};
 
 api.deleteMail = function(index){
 	return m.request({
@@ -15,7 +15,7 @@ api.deleteMail = function(index){
 		url: "api/inbox/" + index,
 		headers: { "authorization": webmail.token }
 	});
-}
+};
 
 api.markRead = function(index){
 	return m.request({
@@ -24,7 +24,7 @@ api.markRead = function(index){
 		data: { index: index },
 		headers: { "authorization": webmail.token }
 	});
-}
+};
 
 api.sendMail = function(recipient, subject, text){
 	return m.request({
@@ -37,14 +37,14 @@ api.sendMail = function(recipient, subject, text){
 		},
 		headers: { "authorization": webmail.token }
 	});
-}
+};
 
 api.verifyToken = function(){
 	return m.request({
 		url: "api/verify",
 		headers: { "authorization": webmail.token }
 	});
-}
+};
 
 api.login = function(username, password){
 	return m.request({
@@ -52,7 +52,7 @@ api.login = function(username, password){
 		url: "api/login",
 		data: { username: username, password: password }
 	});
-}
+};
 
 
 

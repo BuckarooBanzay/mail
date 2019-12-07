@@ -28,7 +28,7 @@
 	}
 
 	m.mount(document.getElementById("nav"), {
-		view: function(vnode){
+		view: function(){
 			return m("nav", {class:"navbar navbar-dark bg-dark fixed-top navbar-expand-lg"}, NavBarContent());
 		}
 	});

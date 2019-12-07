@@ -40,20 +40,20 @@ service.login = function(username, password){
 			state.errorMsg = "Login failed: " + result.message;
 		}
 	})
-	.catch(function(err){
+	.catch(function(){
 		state.errorMsg = "System error!";
 		state.busy = false;
 	});
-}
+};
 
 service.logout = function(){
 	state.loggedIn = false;
 	webmail.mails = [];
-	
+
 	//clear token
 	webmail.token = null;
 	delete localStorage["webmail-token"];
-}
+};
 
 service.fetchMails = function(){
 	if (!webmail.mails || !webmail.mails.length){
@@ -62,7 +62,7 @@ service.fetchMails = function(){
 			webmail.mails = result;
 		});
 	}
-}
+};
 
 service.countUnread = function(){
 	var count = 0;
@@ -74,14 +74,14 @@ service.countUnread = function(){
 	}
 
 	return count;
-}
+};
 
 service.sendMail = function(){
 	webmail.api.sendMail(webmail.compose.recipient, webmail.compose.subject, webmail.compose.body);
 	webmail.compose.recipient = "";
 	webmail.compose.subject = "";
 	webmail.compose.body = "";
-}
+};
 
 service.reply = function(index){
 	var mail = service.readMail(index);
@@ -89,7 +89,7 @@ service.reply = function(index){
 	webmail.compose.subject = "Re: " + mail.subject;
 	webmail.compose.body = "\n---- Original message ----\n" + mail.body;
 	m.route.set("/compose");
-}
+};
 
 service.readMail = function(index){
 	if (webmail.mails && webmail.mails.length){
@@ -106,7 +106,7 @@ service.readMail = function(index){
 
 		return mail;
 	}
-}
+};
 
 service.deleteMail = function(index){
 	return webmail.api.deleteMail(index)
@@ -119,7 +119,7 @@ service.deleteMail = function(index){
 			return mail;
 		});
 	});
-}
+};
 
 
 

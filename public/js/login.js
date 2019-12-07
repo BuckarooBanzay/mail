@@ -12,17 +12,17 @@
 			disabled: !state.username || !state.password,
 			onclick: function(){ webmail.service.login(state.username, state.password); }
 		}, [spinner, " Login ", infoText]);
-	}
+	};
 
 	var LogoutButton = function(){
 		return m("button[type=submit]", {
 			class:"btn btn-sm btn-block btn-secondary",
 			onclick: webmail.service.logout
 		}, "Logout");
-	}
+	};
 
 	var LoginForm = {
-		view: function(vnode){
+		view: function(){
 			return [
 				m("div", {class:"row"}, [
 					m("h3", "Webmail login")
@@ -50,7 +50,7 @@
 				])
 			];
 		}
-	}
+	};
 
 	webmail.routes["/login"] = {
 		view: function(){

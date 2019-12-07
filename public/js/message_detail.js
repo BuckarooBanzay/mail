@@ -33,9 +33,8 @@
 				m("h2", mail.subject),
 				m("h5", [ "From: ", m("b", mail.sender), replyBtn ]),
 				m("h5", [ "Sent: ", m("b", timeStr) ]),
-				m("div", body),
-				
-			]
+				m("div", body)
+			];
 		}
 	};
 

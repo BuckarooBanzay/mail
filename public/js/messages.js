@@ -43,7 +43,7 @@
 	};
 
 	var InboxTable = {
-		view: function(vnode){
+		view: function(){
 			if (!webmail.mails){
 				return m("div", "Loading...");
 			}

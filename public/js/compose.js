@@ -3,7 +3,7 @@
 	var state = webmail.compose;
 
 	var Compose = {
-		view: function(vnode){
+		view: function(){
 			return [
 				m("div", {class:"row"}, [
 					m("input[type=text]", {
@@ -49,7 +49,7 @@
 					m("div", {class:"col-md-2"}),
 					m("form", {class:"col-md-8"}, m(Compose)),
 					m("div", {class:"col-md-2"})
-				])
+				]);
 
 			else
 				return null;
