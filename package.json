@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jshint public/js/ src/"
+    "test": "cd src && jshint && cd ../public/js/ && jshint"
   },
   "author": "",
   "license": "ISC",
