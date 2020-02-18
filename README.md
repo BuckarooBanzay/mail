@@ -1,6 +1,9 @@
 Mail mod for Minetest (webmail component)
 ======
 
+![](https://github.com/minetest-mail/mail/workflows/jshint/badge.svg)
+![](https://github.com/minetest-mail/mail/workflows/docker/badge.svg)
+
 This is the webmail component for the minetest mail mod
 
 The ingame mod lives here: https://github.com/minetest-mail/mail_mod
