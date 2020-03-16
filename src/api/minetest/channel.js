@@ -16,8 +16,10 @@ events.on("channel-send", function(data){
 
 // web -> mod
 app.get('/api/minetest/channel', function(req, res){
-	if (!keycheck(req, res))
+	if (!keycheck(req, res)){
+		console.warn("unauthorized channel GET request");
 		return;
+	}
 
 	function trySend(){
 		if (tx_queue.length > 0){
@@ -48,8 +50,10 @@ app.get('/api/minetest/channel', function(req, res){
 
 // mod -> web
 app.post('/api/minetest/channel', jsonParser, function(req, res){
-	if (!keycheck(req, res))
+	if (!keycheck(req, res)){
+		console.warn("unauthorized channel POST request");
 		return;
+	}
 
 	if (debug)
 		console.log("[rx]", req.body);
