@@ -1,5 +1,5 @@
 # Stage 1 testing
-FROM node:13.10.1-alpine
+FROM node:13.11.0-alpine
 
 COPY package.json /data/
 COPY package-lock.json /data/
@@ -10,7 +10,7 @@ COPY .git/refs/heads/master /data/public/version.txt
 RUN cd /data && npm i && npm test
 
 # Stage 2 package
-FROM node:13.10.1-alpine
+FROM node:13.11.0-alpine
 
 COPY package.json /data/
 COPY package-lock.json /data/
