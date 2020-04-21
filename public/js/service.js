@@ -13,7 +13,7 @@ if (state.token){
 	verifyToken()
 	.then(function(result){
 		if (result.username){
-			state.loginState.username = result.loginState.username;
+			state.loginState.username = result.username;
 			state.loginState.loggedIn = true;
 			//fetch messages after token alright
 			fetchMails();
