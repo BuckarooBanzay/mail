@@ -1,7 +1,9 @@
 Mail mod for Minetest (webmail component)
 ======
 
-![](https://github.com/minetest-mail/mail/workflows/jshint/badge.svg)
+![](https://github.com/minetest-mail/mail/workflows/jshint_backend/badge.svg)
+![](https://github.com/minetest-mail/mail/workflows/jshint_frontend/badge.svg)
+![](https://github.com/minetest-mail/mail/workflows/integration-test/badge.svg)
 ![](https://github.com/minetest-mail/mail/workflows/docker/badge.svg)
 
 This is the webmail component for the minetest mail mod
