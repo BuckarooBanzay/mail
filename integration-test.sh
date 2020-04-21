@@ -43,6 +43,9 @@ docker run --rm --name minetest \
 	-v ${MTDIR}:/var/lib/minetest/.minetest \
   -v $(pwd)/mail_mod:/var/lib/minetest/.minetest/worlds/world/worldmods/mail \
   -v $(pwd)/test_mod:/var/lib/minetest/.minetest/worlds/world/worldmods/mail_test \
+  -e use_proxy=false \
+  -e http_proxy= \
+  -e HTTP_PROXY= \
   --network host \
 	registry.gitlab.com/minetest/minetest/server:5.2.0 &
 
