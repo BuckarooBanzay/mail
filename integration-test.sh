@@ -42,5 +42,9 @@ docker run --rm -i \
 
 test -f ${WORLDDIR}/integration_test.json && exit 0 || exit 1
 
+# https://jwt.io/
+# TODO
+#TOKEN="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwidXNlcm5hbWUiOiJkc3QiLCJpYXQiOjE1MTYyMzkwMjJ9.7ik564LuatEhOFapNWIqSlYcST41cgmHGAuTnAowTu8"
+#curl -v -H "Authorization: ${TOKEN}" "http://127.0.0.1:8080/api/inbox"
 
 echo "Test complete!"

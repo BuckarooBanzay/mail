@@ -3,7 +3,9 @@ minetest.log("warning", "[TEST] integration-test enabled!")
 
 minetest.register_on_mods_loaded(function()
 	minetest.log("warning", "[TEST] starting tests")
-	minetest.after(0, function()
+	mail.send("src", "dst", "subject", "body");
+	minetest.after(1, function()
+
 		minetest.log("warning", "[TEST] integration tests done!")
 		minetest.request_shutdown("success")
 
