@@ -4,8 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "cd src && jshint . && cd ../public/js/ && jshint .",
-		"start": "node src/index.js"
+    "test": "echo ok",
+    "jshint_backend": "cd src && jshint .",
+    "jshint_frontend": "cd public/js && jshint .",
+    "start": "node src/index.js",
+    "bundle": "cd public/js && rollup -c rollup.config.js"
   },
   "author": "",
   "license": "ISC",
@@ -15,6 +18,7 @@
     "jsonwebtoken": "^8.4.0"
   },
   "devDependencies": {
-    "jshint": "^2.10.3"
+    "jshint": "^2.10.3",
+    "rollup": "^2.6.1"
   }
 }

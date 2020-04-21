@@ -1,73 +1,79 @@
-(function(state){
-
-var service = {};
+import state from './state.js';
+import {
+	markRead,
+	verifyToken,
+	login as api_login,
+	fetchMails as api_fetchMails,
+	sendMail as api_sendMail,
+	deleteMail as api_deleteMail
+} from './api.js';
 
 //verify token if available
-if (webmail.token){
-	webmail.api.verifyToken()
+if (state.token){
+	verifyToken()
 	.then(function(result){
 		if (result.username){
-			state.username = result.username;
-			state.loggedIn = true;
+			state.loginState.username = result.loginState.username;
+			state.loginState.loggedIn = true;
 			//fetch messages after token alright
-			service.fetchMails();
+			fetchMails();
 		}
 	});
 }
 
 
-service.login = function(username, password){
+export const login = function(username, password){
 	if (!username || !password)
 		return;
 
-	state.errorMsg = "";
-	state.busy = true;
+	state.loginState.errorMsg = "";
+	state.loginState.busy = true;
 
-	webmail.api.login(username, password)
+	api_login(username, password)
 	.then(function(result){
-		state.busy = false;
+		state.loginState.busy = false;
 		if (result.success){
-			state.loggedIn = true;
-			state.errorMsg = "";
+			state.loginState.loggedIn = true;
+			state.loginState.errorMsg = "";
 
 			//save token
-			webmail.token = result.token;
+			state.token = result.token;
 			localStorage["webmail-token"] = result.token;
 
 			//fetch mails after login
-			service.fetchMails();
+			fetchMails();
 		} else {
-			state.errorMsg = "Login failed: " + result.message;
+			state.loginState.errorMsg = "Login failed: " + result.message;
 		}
 	})
 	.catch(function(){
-		state.errorMsg = "System error!";
-		state.busy = false;
+		state.loginState.errorMsg = "System error!";
+		state.loginState.busy = false;
 	});
 };
 
-service.logout = function(){
-	state.loggedIn = false;
-	webmail.mails = [];
+export const logout = function(){
+	state.loginState.loggedIn = false;
+	state.mails = [];
 
 	//clear token
-	webmail.token = null;
+	state.token = null;
 	delete localStorage["webmail-token"];
 };
 
-service.fetchMails = function(){
-	if (!webmail.mails || !webmail.mails.length){
-		webmail.api.fetchMails()
+export const fetchMails = function(){
+	if (!state.mails || !state.mails.length){
+		api_fetchMails()
 		.then(function(result){
-			webmail.mails = result;
+			state.mails = result;
 		});
 	}
 };
 
-service.countUnread = function(){
+export const countUnread = function(){
 	var count = 0;
-	if (webmail.mails && webmail.mails.length){
-		webmail.mails.forEach(function(mail){
+	if (state.mails && state.mails.length){
+		state.mails.forEach(function(mail){
 			if (mail.unread)
 				count++;
 		});
@@ -76,29 +82,23 @@ service.countUnread = function(){
 	return count;
 };
 
-service.sendMail = function(){
-	webmail.api.sendMail(webmail.compose.recipient, webmail.compose.subject, webmail.compose.body);
-	webmail.compose.recipient = "";
-	webmail.compose.subject = "";
-	webmail.compose.body = "";
+export const sendMail = function(){
+	api_sendMail(state.compose.recipient, state.compose.subject, state.compose.body);
+	state.compose.recipient = "";
+	state.compose.subject = "";
+	state.compose.body = "";
 };
 
-service.reply = function(index){
-	var mail = service.readMail(index);
-	webmail.compose.recipient = mail.sender;
-	webmail.compose.subject = "Re: " + mail.subject;
-	webmail.compose.body = "\n---- Original message ----\n" + mail.body;
-	m.route.set("/compose");
-};
 
-service.readMail = function(index){
-	if (webmail.mails && webmail.mails.length){
 
-		var mail = webmail.mails[index-1];
+export const readMail = function(index){
+	if (state.mails && state.mails.length){
+
+		var mail = state.mails[index-1];
 
 		//mark as read with api
 		if (mail.unread){
-			webmail.api.markRead(index);
+			markRead(index);
 
 			//mark read locally
 			mail.unread = false;
@@ -108,11 +108,20 @@ service.readMail = function(index){
 	}
 };
 
-service.deleteMail = function(index){
-	return webmail.api.deleteMail(index)
+export const reply = function(index){
+	var mail = readMail(index);
+	state.compose.recipient = mail.sender;
+	state.compose.subject = "Re: " + mail.subject;
+	state.compose.body = "\n---- Original message ----\n" + mail.body;
+	m.route.set("/compose");
+};
+
+
+export const deleteMail = function(index){
+	return api_deleteMail(index)
 	.then(function(){
 		var new_index = 1;
-		webmail.mails = webmail.mails
+		state.mails = state.mails
 		.filter(function(mail){ return mail.index != index; })
 		.map(function(mail){
 			mail.index = new_index++;
@@ -120,9 +129,3 @@ service.deleteMail = function(index){
 		});
 	});
 };
-
-
-
-webmail.service = service;
-
-})(webmail.loginState);

@@ -4,7 +4,6 @@
   "esversion": 6,
   "browser": true,
   "globals": {
-    "webmail": true,
     "moment": true,
     "m": true
   }

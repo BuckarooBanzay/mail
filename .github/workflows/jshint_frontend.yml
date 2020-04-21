@@ -1,4 +1,4 @@
-name: jshint
+name: jshint_frontend
 
 on: [push, pull_request]
 
@@ -9,12 +9,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
-
     - name: apt
       run: sudo apt-get install -y nodejs npm
-
-    - name: npm install
+    - name: install
       run: npm i
-
-    - name: npm test
-      run: npm test
+    - name: jshint
+      run: npm run jshint_frontend

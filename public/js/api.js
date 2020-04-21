@@ -1,32 +1,30 @@
-(function(){
+import state from './state.js';
 
-var api = {};
-
-api.fetchMails = function(){
+export const fetchMails = function(){
 	return m.request({
 		url: "api/inbox",
-		headers: { "authorization": webmail.token }
+		headers: { "authorization": state.token }
 	});
 };
 
-api.deleteMail = function(index){
+export const deleteMail = function(index){
 	return m.request({
 		method: "DELETE",
 		url: "api/inbox/" + index,
-		headers: { "authorization": webmail.token }
+		headers: { "authorization": state.token }
 	});
 };
 
-api.markRead = function(index){
+export const markRead = function(index){
 	return m.request({
 		method: "POST",
 		url: "api/markread",
 		data: { index: index },
-		headers: { "authorization": webmail.token }
+		headers: { "authorization": state.token }
 	});
 };
 
-api.sendMail = function(recipient, subject, text){
+export const sendMail = function(recipient, subject, text){
 	return m.request({
 		method: "POST",
 		url: "api/send",
@@ -35,28 +33,21 @@ api.sendMail = function(recipient, subject, text){
 			subject: subject,
 			text: text
 		},
-		headers: { "authorization": webmail.token }
+		headers: { "authorization": state.token }
 	});
 };
 
-api.verifyToken = function(){
+export const verifyToken = function(){
 	return m.request({
 		url: "api/verify",
-		headers: { "authorization": webmail.token }
+		headers: { "authorization": state.token }
 	});
 };
 
-api.login = function(username, password){
+export const login = function(username, password){
 	return m.request({
 		method: "POST",
 		url: "api/login",
 		data: { username: username, password: password }
 	});
 };
-
-
-
-//publish
-window.webmail.api = api;
-
-})();
