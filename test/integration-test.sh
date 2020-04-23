@@ -1,5 +1,7 @@
 #!/bin/bash
 
+MINETEST_VERSION=5.2.0
+
 # prerequisites
 jq --version || exit 1
 curl --version || exit 1
@@ -32,6 +34,7 @@ bash -c 'while !</dev/tcp/localhost/8080; do sleep 1; done;'
 git clone https://github.com/minetest-mail/mail_mod.git
 
 # start minetest with mail mod
+docker pull registry.gitlab.com/minetest/minetest/server:${MINETEST_VERSION}
 docker run --rm --name minetest \
   -u root:root \
 	-v $(pwd)/minetest.conf:/etc/minetest/minetest.conf:ro \
@@ -43,7 +46,7 @@ docker run --rm --name minetest \
   -e http_proxy= \
   -e HTTP_PROXY= \
   --network host \
-	registry.gitlab.com/minetest/minetest/server:5.2.0 &
+	registry.gitlab.com/minetest/minetest/server:${MINETEST_VERSION} &
 
 # prepare cleanup
 function cleanup {
@@ -55,17 +58,27 @@ function cleanup {
 trap cleanup EXIT
 
 # wait for startup
-sleep 2
+sleep 5
 
-# Execute calls agains mail-server
+# Execute calls against mail-server
 
+# login
 LOGIN_DATA='{"username":"test","password":"enter"}'
 RES=$(curl --data "${LOGIN_DATA}" -H "Content-Type: application/json" "http://127.0.0.1:8080/api/login")
 echo Login response: $RES
 SUCCESS=$(echo $RES | jq -r .success)
-
-test "$SUCCESS" == "true" || exit 1
-
 TOKEN=$(echo $RES | jq -r .token)
+
+# login succeeded
+test "$SUCCESS" == "true" || exit 1
+# token extracted
+test -n "$TOKEN" || exit 1
+
+# fetch mails
+RES=$(curl -H "Authorization: ${TOKEN}" "http://127.0.0.1:8080/api/inbox")
+echo Mailbox: ${RES}
+
+# inbox count is 1
+test "$(echo $RES | jq '. | length')" == "1" || exit 1
 
 echo "Test complete!"
