@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# prerequisites
+jq --version || exit 1
+curl --version || exit 1
+
+# ensure proper current directory
 CWD=$(dirname $0)
 cd ${CWD}
 
@@ -55,6 +60,12 @@ sleep 2
 # Execute calls agains mail-server
 
 LOGIN_DATA='{"username":"test","password":"enter"}'
-curl -v --data "${LOGIN_DATA}" -H "Content-Type: application/json" "http://127.0.0.1:8080/api/login"
+RES=$(curl --data "${LOGIN_DATA}" -H "Content-Type: application/json" "http://127.0.0.1:8080/api/login")
+echo Login response: $RES
+SUCCESS=$(echo $RES | jq -r .success)
+
+test "$SUCCESS" == "true" || exit 1
+
+TOKEN=$(echo $RES | jq -r .token)
 
 echo "Test complete!"
