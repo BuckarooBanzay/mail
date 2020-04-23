@@ -30,7 +30,8 @@ git clone https://github.com/minetest-mail/mail_mod.git
 docker run --rm --name minetest \
   -u root:root \
 	-v $(pwd)/minetest.conf:/etc/minetest/minetest.conf:ro \
-  -v $(pwd)/players.sqlite:/root/.minetest/worlds/world/players.sqlite \
+  -v $(pwd)/world.mt:/root/.minetest/worlds/world/world.mt \
+  -v $(pwd)/auth.sqlite:/root/.minetest/worlds/world/auth.sqlite \
   -v $(pwd)/mail_mod:/root/.minetest/worlds/world/worldmods/mail \
   -v $(pwd)/test_mod:/root/.minetest/worlds/world/worldmods/mail_test \
   -e use_proxy=false \
