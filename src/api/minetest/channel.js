@@ -21,6 +21,9 @@ app.get('/api/minetest/channel', function(req, res){
 		return;
 	}
 
+	if (debug)
+		console.log("[tx-channel-entry]");
+
 	function trySend(){
 		if (tx_queue.length > 0){
 			var obj = tx_queue.shift();

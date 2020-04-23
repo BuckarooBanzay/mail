@@ -31,7 +31,8 @@ app.post('/api/login', jsonParser, function(req, res){
 			token: t
 		});
 	})
-	.catch(() => {
+	.catch(e => {
+		console.error(e);
 		res.status(500).end();
 	});
 

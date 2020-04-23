@@ -1,5 +1,8 @@
 #!/bin/bash
 
+CWD=$(dirname $0)
+cd ${CWD}
+
 # setup
 unset use_proxy
 unset http_proxy
@@ -8,7 +11,7 @@ unset HTTP_PROXY
 unset HTTPS_PROXY
 
 # build
-docker build . -t mail
+docker build .. -t mail
 
 # run mail-server
 docker run --name mail --rm \
@@ -23,26 +26,13 @@ bash -c 'while !</dev/tcp/localhost/8080; do sleep 1; done;'
 # clone mod-part
 git clone https://github.com/minetest-mail/mail_mod.git
 
-# configure minetest
-CFG=/tmp/minetest.conf
-MTDIR=/tmp/mt
-WORLDDIR=${MTDIR}/worlds/world
-
-cat <<EOF > ${CFG}
- secure.http_mods = mail
- webmail.url = 127.0.0.1:8080
- webmail.key = myserverkey
-EOF
-
-mkdir -p ${WORLDDIR}
-chmod 777 ${MTDIR} -R
-
 # start minetest with mail mod
 docker run --rm --name minetest \
-	-v ${CFG}:/etc/minetest/minetest.conf:ro \
-	-v ${MTDIR}:/var/lib/minetest/.minetest \
-  -v $(pwd)/mail_mod:/var/lib/minetest/.minetest/worlds/world/worldmods/mail \
-  -v $(pwd)/test_mod:/var/lib/minetest/.minetest/worlds/world/worldmods/mail_test \
+  -u root:root \
+	-v $(pwd)/minetest.conf:/etc/minetest/minetest.conf:ro \
+  -v $(pwd)/players.sqlite:/root/.minetest/worlds/world/players.sqlite \
+  -v $(pwd)/mail_mod:/root/.minetest/worlds/world/worldmods/mail \
+  -v $(pwd)/test_mod:/root/.minetest/worlds/world/worldmods/mail_test \
   -e use_proxy=false \
   -e http_proxy= \
   -e HTTP_PROXY= \
@@ -59,12 +49,11 @@ function cleanup {
 trap cleanup EXIT
 
 # wait for startup
-sleep 10
+sleep 2
 
 # Execute calls agains mail-server
-# https://jwt.io/
-TOKEN="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwidXNlcm5hbWUiOiJkc3QiLCJpYXQiOjE1MTYyMzkwMjJ9.7ik564LuatEhOFapNWIqSlYcST41cgmHGAuTnAowTu8"
 
-curl -v -H "Authorization: ${TOKEN}" "http://127.0.0.1:8080/api/inbox"
+LOGIN_DATA='{"username":"test","password":"enter"}'
+curl -v --data "${LOGIN_DATA}" -H "Content-Type: application/json" "http://127.0.0.1:8080/api/login"
 
 echo "Test complete!"

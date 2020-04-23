@@ -14,7 +14,7 @@ jobs:
     - uses: actions/checkout@master
 
     - name: integration-test
-      run: ./integration-test.sh
+      run: ./test/integration-test.sh
 
     - name: docker publish
       uses: elgohr/Publish-Docker-Github-Action@master
