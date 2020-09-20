@@ -7,8 +7,8 @@ module.exports = (playername, recipient, subject, text) => new Promise(function(
 	events.emit("channel-send", {
 		type: "send",
 		data: {
-			src: playername,
-			dst: recipient,
+			from: playername,
+			to: recipient,
 			subject: subject || "",
 			body: text || ""
 		}

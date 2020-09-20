@@ -9,7 +9,8 @@ var LoginButton = function(){
 	return m("button", {
 		class:"btn btn-sm btn-block btn-primary",
 		disabled: !state.loginState.username || !state.loginState.password,
-		onclick: function(){ login(state.loginState.username, state.loginState.password); }
+		onclick: function(){ login(state.loginState.username, state.loginState.password); },
+		onsubmit: function(e){ e.preventDefault(); }
 	}, [spinner, " Login ", infoText]);
 };
 

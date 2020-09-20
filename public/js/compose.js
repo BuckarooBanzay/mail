@@ -33,7 +33,8 @@ const Compose = {
 				m("button[type=submit]", {
 					class:"btn btn-sm btn-block btn-primary",
 					onclick: sendMail,
-					disabled: !state.compose.body || !state.compose.subject || !state.compose.recipient
+					disabled: !state.compose.body || !state.compose.subject || !state.compose.recipient,
+					onsubmit: function(e) { e.preventDefault(); }
 				}, "Submit")
 			])
 		];
