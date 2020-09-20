@@ -15,7 +15,7 @@ var LoginButton = function(){
 };
 
 var LogoutButton = function(){
-	return m("button[type=submit]", {
+	return m("button", {
 		class:"btn btn-sm btn-block btn-secondary",
 		onclick: logout
 	}, "Logout");
