@@ -30,7 +30,7 @@ const Compose = {
 				})
 			]),
 			m("div", {class:"row"}, [
-				m("button", {
+				m("a", {
 					class:"btn btn-sm btn-block btn-primary",
 					onclick: sendMail,
 					disabled: !state.compose.body || !state.compose.subject || !state.compose.recipient,
