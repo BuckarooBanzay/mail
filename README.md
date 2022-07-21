@@ -1,3 +1,9 @@
+# :warning: *Deprecation notice* :warning:
+
+This project is now being replaced by the `mtui` project here: https://github.com/minetest-go/mtui
+
+It only serves as a public archive at this point
+
 Mail mod for Minetest (webmail component)
 ======
 
